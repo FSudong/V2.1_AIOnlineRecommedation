@@ -1,0 +1,14 @@
+target/
+/.classpath
+/.project
+/.settings
+*.iml
+.idea/*
+logs/*
+src/test/*
+src/main/resources/raw_sentences.txt
+src/main/resources/paper2vecmodel
+src/main/resources/sentences.txt
+src/main/resources/word2vecmodel
+
+

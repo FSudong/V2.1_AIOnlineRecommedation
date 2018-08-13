@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.seu.kse.controller">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <mvc:annotation-driven/>
+
+    <import resource="classpath*:spring-mybatis.xml"/>
+    <context:component-scan base-package="com.seu.kse.service">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+
+        <property name="prefix" value="/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+    <!--推荐-->
+    <bean id="recommederTask" class="com.seu.kse.quartz.RecommederTask" />
+    <bean id="jobDetail1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="recommederTask" />
+        <property name="targetMethod" value="execute" />
+        <!--将并发设置为false-->
+        <property name="concurrent" value="false" />
+    </bean>
+
+    <!--注入数据-->
+    <bean id="dataInjectTask" class="com.seu.kse.quartz.DataInjectTask" />
+    <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="dataInjectTask" />
+        <property name="targetMethod" value="execute" />
+
+        <property name="concurrent" value="false" />
+    </bean>
+
+    <!--离线模型更新-->
+    <bean id="updateModelTask" class="com.seu.kse.quartz.OfflineModelTask" />
+    <bean id="jobDetail3" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="updateModelTask" />
+        <property name="targetMethod" value="execute" />
+
+        <property name="concurrent" value="false" />
+    </bean>
+
+    <!--打标签-->
+    <bean id="taggingTask" class="com.seu.kse.quartz.TaggingTask" />
+    <bean id="jobDetail4" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="taggingTask" />
+        <property name="targetMethod" value="execute" />
+
+        <property name="concurrent" value="false" />
+    </bean>
+
+
+
+    <bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail1" />
+        <!--表达式，每 天 执行一次-->
+        <property name="cronExpression" value="0 0 10 * * ?" />
+    </bean>
+
+    <bean id="trigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail2" />
+        <!--表达式，每 天 执行一次-->
+        <property name="cronExpression" value="0 0 6 * * ?" />
+    </bean>
+
+
+    <bean id="trigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail3" />
+        <!--表达式，每 天 执行一次-->
+        <property name="cronExpression" value="0 0 7 * * ?"  />
+    </bean>
+
+    <bean id="trigger4" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail3" />
+        <!--表达式，每 天 执行一次-->
+        <property name="cronExpression" value="0 0 8 * * ?"  />
+    </bean>
+
+    <!--  总管理类如果将lazy-init='false'那么容器启动就会执行调度程序   -->
+    <bean id="startQuertz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false" >
+        <property name="triggers">
+            <list>
+                <!--作业调度器,list下可加入其他的调度器-->
+                <ref bean="trigger1" />
+                <ref bean="trigger2" />
+                <ref bean="trigger3" />
+                <ref bean="trigger4" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置拦截器 -->
+    <mvc:interceptors>
+        <!-- 多个拦截器，按顺序执行 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/> <!-- 拦截所有的url包括子url路径 -->
+            <mvc:exclude-mapping path="/login/register.jsp"/>
+            <mvc:exclude-mapping path="/index.jsp"/>
+            <bean class="com.seu.kse.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+        <!-- 其他拦截器 -->
+    </mvc:interceptors>
+
+</beans>

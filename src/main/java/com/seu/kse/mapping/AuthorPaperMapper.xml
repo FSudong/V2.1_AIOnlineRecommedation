@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seu.kse.dao.AuthorPaperMapper" >
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.AuthorPaperKey" >
+    <id column="pid" property="pid" jdbcType="VARCHAR" />
+    <id column="aid" property="aid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="aids" type="java.lang.Integer">
+    <collection property="aid" ofType="java.lang.Integer" javaType="ArrayList">
+      <id column="aid" property="aid" jdbcType="INTEGER" />
+
+    </collection>
+  </resultMap>
+  <select id="countPid" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select COUNT(*)
+    from author_paper
+    where pid=#{pid}
+  </select>
+
+  <select id="selectAuthorsByPaper" resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT  *
+    FROM author_paper WHERE pid = #{pid,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="com.seu.kse.bean.AuthorPaperKey" >
+    delete from author_paper
+    where pid = #{pid,jdbcType=VARCHAR}
+      and aid = #{aid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.AuthorPaperKey" >
+    insert into author_paper (pid, aid)
+    values (#{pid,jdbcType=VARCHAR}, #{aid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.AuthorPaperKey" >
+    insert into author_paper
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="aid != null" >
+        aid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="aid != null" >
+        #{aid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>

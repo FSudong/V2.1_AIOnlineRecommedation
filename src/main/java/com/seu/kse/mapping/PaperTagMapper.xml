@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seu.kse.dao.PaperTagMapper" >
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.PaperTagKey" >
+    <id column="pid" property="pid" jdbcType="VARCHAR" />
+    <id column="tagName" property="tagname" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.seu.kse.bean.PaperTagKey" >
+    delete from paper_tag
+    where pid = #{pid,jdbcType=VARCHAR}
+      and tagName = #{tagname,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.PaperTagKey" >
+    insert into paper_tag (pid, tagName)
+    values (#{pid,jdbcType=VARCHAR}, #{tagname,jdbcType=VARCHAR})
+  </insert>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.seu.kse.bean.PaperTagKey">
+    SELECT *
+    FROM paper_tag Where pid = #{pid,jdbcType=VARCHAR} and tagName = #{tagname,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByPID" resultType="com.seu.kse.bean.PaperTagKey" parameterType="java.lang.String">
+    select *
+    FROM paper_tag where pid = #{arg0,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.PaperTagKey" >
+    insert into paper_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="tagname != null" >
+        tagName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="tagname != null" >
+        #{tagname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

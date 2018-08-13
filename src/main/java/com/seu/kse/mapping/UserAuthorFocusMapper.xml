@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seu.kse.dao.UserAuthorFocusMapper" >
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.UserAuthorFocusKey" >
+    <id column="uid" property="uid" jdbcType="VARCHAR" />
+    <id column="aid" property="aid" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+  SELECT
+  *
+  FROM user_author_focus where uid = #{uid,jdbcType=VARCHAR} AND aid = #{aid,jdbcType=INTEGER}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.seu.kse.bean.UserAuthorFocusKey" >
+    delete from user_author_focus
+    where uid = #{uid,jdbcType=VARCHAR}
+      and aid = #{aid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.UserAuthorFocusKey" >
+    insert into user_author_focus (uid, aid)
+    values (#{uid,jdbcType=VARCHAR}, #{aid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.UserAuthorFocusKey" >
+    insert into user_author_focus
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="aid != null" >
+        aid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="aid != null" >
+        #{aid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>

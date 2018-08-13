@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seu.kse.dao.PaperSimsMapper" >
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.PaperSims" >
+    <result column="pid" property="pid" jdbcType="VARCHAR" />
+    <result column="pid1" property="pid1" jdbcType="VARCHAR" />
+    <result column="pid2" property="pid2" jdbcType="VARCHAR" />
+    <result column="pid3" property="pid3" jdbcType="VARCHAR" />
+    <result column="pid4" property="pid4" jdbcType="VARCHAR" />
+    <result column="pid5" property="pid5" jdbcType="VARCHAR" />
+    <result column="pid6" property="pid6" jdbcType="VARCHAR" />
+    <result column="pid7" property="pid7" jdbcType="VARCHAR" />
+    <result column="pid8" property="pid8" jdbcType="VARCHAR" />
+    <result column="pid9" property="pid9" jdbcType="VARCHAR" />
+    <result column="pid10" property="pid10" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    pid, pid1, pid2, pid3, pid4, pid5, pid6, pid7, pid8, pid9, pid10
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.seu.kse.bean.PaperSimsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from paper_sims
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.seu.kse.bean.PaperSimsExample" >
+    delete from paper_sims
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.PaperSims" >
+    insert into paper_sims (pid, pid1, pid2, 
+      pid3, pid4, pid5, pid6, 
+      pid7, pid8, pid9, pid10
+      )
+    values (#{pid,jdbcType=VARCHAR}, #{pid1,jdbcType=VARCHAR}, #{pid2,jdbcType=VARCHAR}, 
+      #{pid3,jdbcType=VARCHAR}, #{pid4,jdbcType=VARCHAR}, #{pid5,jdbcType=VARCHAR}, #{pid6,jdbcType=VARCHAR}, 
+      #{pid7,jdbcType=VARCHAR}, #{pid8,jdbcType=VARCHAR}, #{pid9,jdbcType=VARCHAR}, #{pid10,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.PaperSims" >
+    insert into paper_sims
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="pid1 != null" >
+        pid1,
+      </if>
+      <if test="pid2 != null" >
+        pid2,
+      </if>
+      <if test="pid3 != null" >
+        pid3,
+      </if>
+      <if test="pid4 != null" >
+        pid4,
+      </if>
+      <if test="pid5 != null" >
+        pid5,
+      </if>
+      <if test="pid6 != null" >
+        pid6,
+      </if>
+      <if test="pid7 != null" >
+        pid7,
+      </if>
+      <if test="pid8 != null" >
+        pid8,
+      </if>
+      <if test="pid9 != null" >
+        pid9,
+      </if>
+      <if test="pid10 != null" >
+        pid10,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="pid1 != null" >
+        #{pid1,jdbcType=VARCHAR},
+      </if>
+      <if test="pid2 != null" >
+        #{pid2,jdbcType=VARCHAR},
+      </if>
+      <if test="pid3 != null" >
+        #{pid3,jdbcType=VARCHAR},
+      </if>
+      <if test="pid4 != null" >
+        #{pid4,jdbcType=VARCHAR},
+      </if>
+      <if test="pid5 != null" >
+        #{pid5,jdbcType=VARCHAR},
+      </if>
+      <if test="pid6 != null" >
+        #{pid6,jdbcType=VARCHAR},
+      </if>
+      <if test="pid7 != null" >
+        #{pid7,jdbcType=VARCHAR},
+      </if>
+      <if test="pid8 != null" >
+        #{pid8,jdbcType=VARCHAR},
+      </if>
+      <if test="pid9 != null" >
+        #{pid9,jdbcType=VARCHAR},
+      </if>
+      <if test="pid10 != null" >
+        #{pid10,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.seu.kse.bean.PaperSimsExample" resultType="java.lang.Integer" >
+    select count(*) from paper_sims
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update paper_sims
+    <set >
+      <if test="record.pid != null" >
+        pid = #{record.pid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid1 != null" >
+        pid1 = #{record.pid1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid2 != null" >
+        pid2 = #{record.pid2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid3 != null" >
+        pid3 = #{record.pid3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid4 != null" >
+        pid4 = #{record.pid4,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid5 != null" >
+        pid5 = #{record.pid5,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid6 != null" >
+        pid6 = #{record.pid6,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid7 != null" >
+        pid7 = #{record.pid7,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid8 != null" >
+        pid8 = #{record.pid8,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid9 != null" >
+        pid9 = #{record.pid9,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid10 != null" >
+        pid10 = #{record.pid10,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update paper_sims
+    set pid = #{record.pid,jdbcType=VARCHAR},
+      pid1 = #{record.pid1,jdbcType=VARCHAR},
+      pid2 = #{record.pid2,jdbcType=VARCHAR},
+      pid3 = #{record.pid3,jdbcType=VARCHAR},
+      pid4 = #{record.pid4,jdbcType=VARCHAR},
+      pid5 = #{record.pid5,jdbcType=VARCHAR},
+      pid6 = #{record.pid6,jdbcType=VARCHAR},
+      pid7 = #{record.pid7,jdbcType=VARCHAR},
+      pid8 = #{record.pid8,jdbcType=VARCHAR},
+      pid9 = #{record.pid9,jdbcType=VARCHAR},
+      pid10 = #{record.pid10,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

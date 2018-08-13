@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seu.kse.dao.UserPaperNoteMapper" >
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.UserPaperNote" >
+    <id column="uid" property="uid" jdbcType="VARCHAR" />
+    <id column="pid" property="pid" jdbcType="VARCHAR" />
+    <result column="contextURI" property="contexturi" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="paper_source" property="paperSource" jdbcType="VARCHAR" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="tags" property="tags" jdbcType="VARCHAR" />
+    <result column="author_place" property="authorPlace" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.seu.kse.bean.UserPaperNoteWithBLOBs" extends="BaseResultMap" >
+    <result column="context" property="context" jdbcType="LONGVARCHAR" />
+    <result column="paper_direction" property="paperDirection" jdbcType="LONGVARCHAR" />
+    <result column="paper_model" property="paperModel" jdbcType="LONGVARCHAR" />
+    <result column="paper_problem" property="paperProblem" jdbcType="LONGVARCHAR" />
+    <result column="paper_relatedwork" property="paperRelatedwork" jdbcType="LONGVARCHAR" />
+    <result column="paper_review" property="paperReview" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+
+
+  <sql id="Base_Column_List" >
+    uid, pid, contextURI, author, paper_source, keywords, tags, author_place
+  </sql>
+  <sql id="Blob_Column_List" >
+    context, paper_direction, paper_model, paper_problem, paper_relatedwork, paper_review, author_place
+  </sql>
+
+  <select id="selectByPrimaryPaperIDKey" resultType="com.seu.kse.bean.UserPaperNoteWithBLOBs" parameterType="com.seu.kse.bean.UserPaperNoteKey" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_paper_note
+    where  pid = #{pid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="com.seu.kse.bean.UserPaperNoteKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_paper_note
+    where uid = #{uid,jdbcType=VARCHAR}
+      and pid = #{pid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.seu.kse.bean.UserPaperNoteKey" >
+    delete from user_paper_note
+    where uid = #{uid,jdbcType=VARCHAR}
+      and pid = #{pid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.UserPaperNoteWithBLOBs" >
+    insert into user_paper_note (uid, pid, contextURI, 
+      author, paper_source, keywords, 
+      tags, context, paper_direction, 
+      paper_model, paper_problem, paper_relatedwork, 
+      paper_review, author_place)
+    values (#{uid,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, #{contexturi,jdbcType=VARCHAR}, 
+      #{author,jdbcType=VARCHAR}, #{paperSource,jdbcType=VARCHAR}, #{keywords,jdbcType=VARCHAR}, 
+      #{tags,jdbcType=VARCHAR}, #{context,jdbcType=LONGVARCHAR}, #{paperDirection,jdbcType=LONGVARCHAR}, 
+      #{paperModel,jdbcType=LONGVARCHAR}, #{paperProblem,jdbcType=LONGVARCHAR}, #{paperRelatedwork,jdbcType=LONGVARCHAR}, 
+      #{paperReview,jdbcType=LONGVARCHAR}, #{authorPlace, jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.UserPaperNoteWithBLOBs" >
+    insert into user_paper_note
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="contexturi != null" >
+        contextURI,
+      </if>
+      <if test="author != null" >
+        author,
+      </if>
+      <if test="paperSource != null" >
+        paper_source,
+      </if>
+      <if test="keywords != null" >
+        keywords,
+      </if>
+      <if test="tags != null" >
+        tags,
+      </if>
+      <if test="context != null" >
+        context,
+      </if>
+      <if test="paperDirection != null" >
+        paper_direction,
+      </if>
+      <if test="paperModel != null" >
+        paper_model,
+      </if>
+      <if test="paperProblem != null" >
+        paper_problem,
+      </if>
+      <if test="paperRelatedwork != null" >
+        paper_relatedwork,
+      </if>
+      <if test="paperReview != null" >
+        paper_review,
+      </if>
+      <if test="authorPlace!= null" >
+        paper_review,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="contexturi != null" >
+        #{contexturi,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="paperSource != null" >
+        #{paperSource,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="tags != null" >
+        #{tags,jdbcType=VARCHAR},
+      </if>
+      <if test="context != null" >
+        #{context,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperDirection != null" >
+        #{paperDirection,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperModel != null" >
+        #{paperModel,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperProblem != null" >
+        #{paperProblem,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperRelatedwork != null" >
+        #{paperRelatedwork,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperReview != null" >
+        #{paperReview,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="authorPlace!= null" >
+        #{authorPlace,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.seu.kse.bean.UserPaperNoteWithBLOBs" >
+    update user_paper_note
+    <set >
+      <if test="contexturi != null" >
+        contextURI = #{contexturi,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        author = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="paperSource != null" >
+        paper_source = #{paperSource,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        keywords = #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="tags != null" >
+        tags = #{tags,jdbcType=VARCHAR},
+      </if>
+      <if test="context != null" >
+        context = #{context,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperDirection != null" >
+        paper_direction = #{paperDirection,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperModel != null" >
+        paper_model = #{paperModel,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperProblem != null" >
+        paper_problem = #{paperProblem,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperRelatedwork != null" >
+        paper_relatedwork = #{paperRelatedwork,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paperReview != null" >
+        paper_review = #{paperReview,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="authorPlace != null" >
+        author_place = #{authorPlace,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=VARCHAR}
+      and pid = #{pid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.seu.kse.bean.UserPaperNoteWithBLOBs" >
+    update user_paper_note
+    set contextURI = #{contexturi,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      paper_source = #{paperSource,jdbcType=VARCHAR},
+      keywords = #{keywords,jdbcType=VARCHAR},
+      tags = #{tags,jdbcType=VARCHAR},
+      context = #{context,jdbcType=LONGVARCHAR},
+      paper_direction = #{paperDirection,jdbcType=LONGVARCHAR},
+      paper_model = #{paperModel,jdbcType=LONGVARCHAR},
+      paper_problem = #{paperProblem,jdbcType=LONGVARCHAR},
+      paper_relatedwork = #{paperRelatedwork,jdbcType=LONGVARCHAR},
+      paper_review = #{paperReview,jdbcType=LONGVARCHAR},
+      author_place = #{authorPlace, jdbcType=VARCHAR}
+    where uid = #{uid,jdbcType=VARCHAR}
+      and pid = #{pid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.seu.kse.bean.UserPaperNote" >
+    update user_paper_note
+    set contextURI = #{contexturi,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      paper_source = #{paperSource,jdbcType=VARCHAR},
+      keywords = #{keywords,jdbcType=VARCHAR},
+      tags = #{tags,jdbcType=VARCHAR}
+       author_place = #{authorPlace, jdbcType=VARCHAR}
+    where uid = #{uid,jdbcType=VARCHAR}
+      and pid = #{pid,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seu.kse.dao.UserTagMapper" >
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.UserTagKey" >
+    <id column="uid" property="uid" jdbcType="VARCHAR" />
+    <id column="tagName" property="tagname" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.seu.kse.bean.UserTagKey" >
+    delete from user_tag
+    where uid = #{uid,jdbcType=VARCHAR}
+      and tagName = #{tagname,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.UserTagKey" >
+    insert into user_tag (uid, tagName)
+    values (#{uid,jdbcType=VARCHAR}, #{tagname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.UserTagKey" >
+    insert into user_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="tagname != null" >
+        tagName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="tagname != null" >
+        #{tagname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectByUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select *
+      FROM user_tag
+    WHERE uid = #{arg0}
+  </select>
+
+</mapper>

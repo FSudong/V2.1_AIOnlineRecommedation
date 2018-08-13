@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.kse.dao.TagMapper">
+  <resultMap id="BaseResultMap" type="com.seu.kse.bean.Tag">
+    <id column="tagName" jdbcType="VARCHAR" property="tagname" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="fatherName" jdbcType="VARCHAR" property="fathername" />
+    <result column="time" jdbcType="DATE" property="time" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    tagName, level, fatherName, time
+  </sql>
+  <select id="selectByExample" parameterType="com.seu.kse.bean.TagExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tag
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tag
+    where tagName = #{tagname,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByTagName"  resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    *
+     FROM
+    tag where tagName = #{tagname, jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAllTag" resultMap="BaseResultMap">
+    select
+    *
+    FROM
+    tag
+  </select>
+
+
+  <select id="selectTodayTag" resultMap="BaseResultMap">
+    select
+    *
+    FROM
+    tag
+    time >= #{arg0}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tag
+    where tagName = #{tagname,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.seu.kse.bean.TagExample">
+    delete from tag
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.seu.kse.bean.Tag">
+    insert into tag (tagName, level, fatherName, 
+      time)
+    values (#{tagname,jdbcType=VARCHAR}, #{level,jdbcType=INTEGER}, #{fathername,jdbcType=VARCHAR}, 
+      #{time,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.seu.kse.bean.Tag">
+    insert into tag
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tagname != null">
+        tagName,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="fathername != null">
+        fatherName,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tagname != null">
+        #{tagname,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="fathername != null">
+        #{fathername,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.seu.kse.bean.TagExample" resultType="java.lang.Long">
+    select count(*) from tag
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tag
+    <set>
+      <if test="record.tagname != null">
+        tagName = #{record.tagname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level != null">
+        level = #{record.level,jdbcType=INTEGER},
+      </if>
+      <if test="record.fathername != null">
+        fatherName = #{record.fathername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.time != null">
+        time = #{record.time,jdbcType=DATE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tag
+    set tagName = #{record.tagname,jdbcType=VARCHAR},
+      level = #{record.level,jdbcType=INTEGER},
+      fatherName = #{record.fathername,jdbcType=VARCHAR},
+      time = #{record.time,jdbcType=DATE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.seu.kse.bean.Tag">
+    update tag
+    <set>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="fathername != null">
+        fatherName = #{fathername,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=DATE},
+      </if>
+    </set>
+    where tagName = #{tagname,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.seu.kse.bean.Tag">
+    update tag
+    set level = #{level,jdbcType=INTEGER},
+      fatherName = #{fathername,jdbcType=VARCHAR},
+      time = #{time,jdbcType=DATE}
+    where tagName = #{tagname,jdbcType=VARCHAR}
+  </update>
+</mapper>
