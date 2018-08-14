@@ -11,10 +11,11 @@
         1）Git Repository URL :https://github.com/yaosheng42/AIOnlineRecommedation.git
         2）Parent Directory:　项目所在目录
         3）Directory Name: 项目名称
-        
+   注意：在添加至idea时，需要add as maven，在idea右下角会有提示框弹出。        
 
 ## 2. 修改配置选项
     1. 修改 包com.seu.kse.service.recommendation 下 Configuration projectRoot 为自己的项目目录
+    1*. 修改 包com.seu.kse.util.Configuration 下 Configuration projectRoot 为自己的项目目录
     2. 由于项目中大部分xml中包含中文，如果运行发生 error : 3 字节的 UTF-8 序列的字节 3 无效的运行时错误，请将所有xml头部encoding属性修改为 GBK
     3. 如果使用本地的数据库，需要修改 jdbc.properties中的数据库连接属性。具体建库流程后面介绍。  
 ## 3. 项目依赖
