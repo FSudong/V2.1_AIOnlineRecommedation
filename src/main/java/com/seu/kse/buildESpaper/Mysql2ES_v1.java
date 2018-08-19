@@ -44,7 +44,7 @@ public class Mysql2ES_v1 {
                 start = start + length;
 //                if (start >= 1000) length = -1;
                 for (Paper paper : papers) {
-                    bulkRequest.add(client.prepareIndex(indexName, typeFaq)
+                    bulkRequest.add(client.prepareIndex(indexName, typeFaq, paper.getId())
                             .setSource(//这里可以直接使用json字符串
                                     jsonBuilder()
                                             .startObject()
@@ -101,7 +101,7 @@ public class Mysql2ES_v1 {
                 System.out.println("从mysql读取完成!!!"+papers.size());
 //                if (start >= 1000) length = -1;
                 for (Paper paper : papers) {
-                    bulkRequest.add(client.prepareIndex(indexName, typeFaq)
+                    bulkRequest.add(client.prepareIndex(indexName, typeFaq, paper.getId())
                             .setSource(//这里可以直接使用json字符串
                                     jsonBuilder()
                                             .startObject()

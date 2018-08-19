@@ -75,7 +75,7 @@ public  class IndexFile {
                     mapping = _getDefinitionMappingForTYPE(indexName, type);
                 }
                 else if (type.equalsIgnoreCase(Configuration.ES_TYPE_PAPER)){
-                    mapping = _getDefinitionMappingForPaper(indexName,type);
+                    mapping = _getDefinitionMappingForPAPER(indexName,type);
                 }
 //               这里应该有问题  都用了Configuration.ES_TYPE_PAPER作为了参数
                 IndexResponse createIndexResponse = client.prepareIndex(indexName,Configuration.ES_TYPE_PAPER)
@@ -157,32 +157,31 @@ public  class IndexFile {
         XContentBuilder mapping = XContentFactory.jsonBuilder()
                 .startObject()
                 .startObject("properties") //下面是设置文档属性
-
-                .startObject("keywords").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("keywords").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("publisher").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("publisher").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
                 .startObject("type").field("type", "text").field("store", true)
                 .endObject()
-                .startObject("url").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("url").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("id").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("id").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("paper_abstract").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("paper_abstract").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("time").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("time").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("title").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("title").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("content").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("content").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
 
                 .endObject()
@@ -284,7 +283,7 @@ public  class IndexFile {
 
 
     //没有索引，建立索引和增加新的template type; for 词条 实体 排名
-    private static XContentBuilder _getDefinitionMappingForPaper(String indexName, String typeFaq) throws IOException {
+    private static XContentBuilder _getDefinitionMappingForPAPER(String indexName, String typeFaq) throws IOException {
         XContentBuilder mapping = XContentFactory.jsonBuilder()
                 .startObject()
                 .startObject("settings")
@@ -296,34 +295,32 @@ public  class IndexFile {
                 .startObject("_all")
                 .field("enabled", "false")
                 .endObject()
-
-
                 .startObject("properties") //下面是设置文档属性
-                .startObject("keywords").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("keywords").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("publisher").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("publisher").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
                 .startObject("type").field("type", "text").field("store", true)
                 .endObject()
-                .startObject("url").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("url").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("id").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("id").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("paper_abstract").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("paper_abstract").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("time").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("time").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("title").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("title").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
-                .startObject("content").field("type", "text").field("analyzer", "standard")
-                .field("search_analyzer", "standard").field("store", true)
+                .startObject("content").field("type", "text").field("analyzer", "english")
+                .field("search_analyzer", "english").field("store", true)
                 .endObject()
                 .endObject()
 
