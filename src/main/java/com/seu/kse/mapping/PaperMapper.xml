@@ -319,7 +319,7 @@
       url = #{url,jdbcType=VARCHAR},
       paper_abstract = #{paperAbstract,jdbcType=VARCHAR},
       time = #{time,jdbcType=DATE},
-      title = #{title,jdbcType=VARCHAR}
+      title = #{title,jdbcType=VARCHAR},
       content = #{content,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -339,7 +339,7 @@
     ,
     <include refid="Blob_Column_List" />
     from paper
-    WHERE type &lt; #{arg2} ORDER BY time DESC LIMIT #{arg0}, #{arg1}
+    WHERE type &lt; #{arg2} ORDER BY time DESC,type DESC LIMIT #{arg0}, #{arg1}
   </select>
 
   <select id="selectSomePaper" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
@@ -378,6 +378,15 @@
   </select>
 
   <select id="selectByTitle" resultMap="ResultMapWithBLOBs " parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from paper
+    where title = #{title,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectPaperListByTitle" resultMap="ResultMapWithBLOBs " parameterType="java.lang.String">
     select
     <include refid="Base_Column_List" />
     ,

@@ -34,6 +34,16 @@ public class PaperService {
         return papers;
     }
     /**
+    * @parament
+    * @
+    * @return 由时间和type共同排序
+    **/
+    public List<Paper> selectPaperByTimeSource(int start, int end){
+        List<Paper> papers = paperdao.selectPaperOrderByTimeSource(start,end,10);
+        return papers;
+    }
+
+    /**
      * 根据论文id查找相关论文
      */
     public Paper searchPaper(String id){
@@ -47,6 +57,10 @@ public class PaperService {
     public Paper getPaperByTitle(String title){
         Paper paper = paperdao.selectByTitle(title);
         return paper;
+    }
+    public List<Paper> getPaperListByTitle(String title){
+        List<Paper> papers = paperdao.selectPaperListByTitle(title);
+        return papers;
     }
 
     /**

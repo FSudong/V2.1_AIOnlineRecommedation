@@ -77,5 +77,43 @@ public class DBservice {
         return rowNum;
     }
 
+    public static List<Paper> selectNewPaper(DBConnection dbConnection,String time_string){
+
+        String sql = "select * from paper where time>="+"'"+time_string+"'";
+        System.out.println(sql);
+        List<Paper> papers = new ArrayList<Paper>();
+        try{
+            Statement statement = (Statement) dbConnection.connection.createStatement();
+            ResultSet resultSet = (ResultSet) statement.executeQuery(sql);
+            while(resultSet.next()){
+                try {
+                    Paper paper = new Paper();
+                    paper.setId(erosenull(resultSet.getString("id")));
+                    paper.setTitle(erosenull(resultSet.getString("title")));
+                    paper.setKeywords(erosenull(resultSet.getString("keywords")));
+                    paper.setType(Integer.valueOf(resultSet.getString("type")));
+                    paper.setPublisher(erosenull(resultSet.getString("publisher")));
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = simpleDateFormat.parse(resultSet.getString("time"));
+                    paper.setTime(date);
+//                    paper.setTime(new SimpleDateFormat("yyyy-MM-dd").parse((String)res.get(Constant.ES_FIELD_TIME)));
+                    paper.setPaperAbstract(erosenull(resultSet.getString("paper_abstract")));
+                    paper.setUrl(erosenull(resultSet.getString("url")));
+
+                    paper.setContent(erosenull(resultSet.getString("content")));
+
+                    papers.add(paper);
+//                    System.out.print("|");
+                }catch (Exception e){
+                    System.out.println(e);
+                }
+            }
+            return papers;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
+
 
 }

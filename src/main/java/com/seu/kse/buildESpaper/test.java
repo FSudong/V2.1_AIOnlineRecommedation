@@ -14,7 +14,9 @@ public class test {
               //索引paper
               IndexFile.indexFaqData(DataSource.PAPER);
               //数据库信息全部传到es
-              Mysql2ES_v1.all2es(Configuration.ES_INDEX_PAPER,Configuration.ES_TYPE_PAPER);
+//              Mysql2ES_v1.all2es(Configuration.ES_INDEX_PAPER,Configuration.ES_TYPE_PAPER);
+//            将最新的数据传入es
+              Mysql2ES_v1.new2es(Configuration.ES_INDEX_PAPER, Configuration.ES_TYPE_PAPER, -1);
               //为论文打标签
 
 //            IndexFile indexFile = new IndexFile();

@@ -90,7 +90,9 @@ public class IndexController {
         if(request.getParameter("pageNum")!=null) {
             pageNum = Integer.parseInt(request.getParameter("pageNum"));
         }
-        List<Paper> papers=paperService.selectPaperByTime(pageNum*limit, (pageNum+1)*limit);
+//        List<Paper> papers=paperService.selectPaperByTime(pageNum*limit, (pageNum+1)*limit);
+//        按照时间和类型排序
+        List<Paper> papers = paperService.selectPaperByTimeSource(pageNum*limit, (pageNum+1)*limit);
         model.addAttribute("papers",papers);
         model.addAttribute("previousPage",pageNum>0?(pageNum-1):pageNum);
         model.addAttribute("nextPage",pageNum+1);
@@ -232,6 +234,7 @@ public class IndexController {
      */
     @RequestMapping(method= RequestMethod.GET,value="/testscoreonpaper",produces="text/plain;charset=UTF-8")
     public @ResponseBody String testScoreOnPaper(HttpServletRequest request){
+//       url格式为http://localhost:8080/testscoreonpaper?uid=&pid=
         String uid = request.getParameter("uid");
         String pid = request.getParameter("pid");
         UserPaperBehaviorKey keys = new UserPaperBehaviorKey();

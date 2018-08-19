@@ -79,20 +79,76 @@ public class DataInjectService {
 
 
         }catch (Exception e){
-
+            System.out.println(e);
             LogUtils.error(e.getMessage(),DataInjectService.class);
+
         }
 
     }
+    public void dataInject_init_pwzhdblp(String... sources){
+        for(String source : sources) {
+//            Calendar c = Calendar.getInstance();
+//            Date now = c.getTime();
+//            c.set(2018, Calendar.AUGUST, 16);
+//
+//            Date cur = c.getTime();
+            Calendar c = Calendar.getInstance();
+            Date now = c.getTime();
+//       取前第三天的日期
+            Date cur=new Date();//取时间
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(cur);
+            calendar.add(calendar.DATE,0);//把日期往后增加一天.整数往后推,负数往前移动
+            cur=calendar.getTime(); //这个时间就是日期往后推一天的结果
+            int source_splits_length = source.split("\\\\").length;
+            String sourceName = source.split("\\\\")[source_splits_length-2];
+            while (cur.before(now)||cur.equals(now)) {
+                try {
+                    LogUtils.info("process cur :" + cur+sourceName, DataInjectService.class);
+
+                    SimpleDateFormat sf = new SimpleDateFormat("yyyy_MM_dd");
+                    String date = sf.format(cur);
+
+                    File file = new File(source + "/" + date);
+                    if (!file.exists()) {
+
+                        LogUtils.info(date + "无数据", DataInjectService.class);
+                        break;
+                    }
+                    File[] list = file.listFiles();
+                    if (list == null) {
+                        LogUtils.info("无数据", DataInjectService.class);
+                        break;
+                    }
+                    for (File f : list)
+                        DataInjectByFile__pwzhdblp(source,f);
+
+                    LogUtils.info("导入 " + date+sourceName + " 数据", DataInjectService.class);
+
+
+                } catch (Exception e) {
+                    System.out.println(e);
+                    LogUtils.error(e.getMessage(), DataInjectService.class);
+                }
+                c.add(Calendar.DATE, 1);
+                cur = c.getTime();
+
+            }
+        }
+    }
+
     public void dataInject_init(){
 
+
+//       取前第三天的日期
+        Date cur=new Date();//取时间
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(cur);
+        calendar.add(calendar.DATE,0);//把日期往后增加一天.整数往后推,负数往前移动
+        cur=calendar.getTime(); //这个时间就是日期往后推一天的结果
         Calendar c = Calendar.getInstance();
         Date now = c.getTime();
-        c.set(2018,Calendar.MARCH,27);
-
-        Date cur =  c.getTime();
-
-        while(cur.before(now)){
+        while(cur.before(now)||cur.equals(now)){
             try{
                 LogUtils.info("process cur :"+cur,DataInjectService.class);
 
@@ -107,8 +163,8 @@ public class DataInjectService {
                 }
                 File[] list=file.listFiles();
                 if(list==null){
-                    LogUtils.info("无数据",DataInjectService.class);
-                    return;
+                    LogUtils.info(date +"无数据",DataInjectService.class);
+                    break;
                 }
                 for(File f:list)
                     DataInjectByFile(f);
@@ -117,14 +173,39 @@ public class DataInjectService {
 
 
             }catch (Exception e){
-
+                System.out.println(e);
                 LogUtils.error(e.getMessage(),DataInjectService.class);
             }
             c.add(Calendar.DATE,1);
             cur =  c.getTime();
 
         }
+//        dataInject_init_pwzhdblp(Configuration.zhihu_path,Configuration.paperweekly_path);
+//        将pw_zh数据导入
+        dataInject_init_pwzhdblp(Configuration.paperweekly_path, Configuration.zhihu_path);
 
+    }
+
+
+    private void DataInjectByFile__pwzhdblp(String source,File file){
+        try{
+            ArrayList<String> inputList= CommonFileUtil.read(file);
+            if(inputList==null||inputList.isEmpty()){
+                LogUtils.error("Empty File:"+file.getName(),DataInjectService.class);
+
+            }else{
+                GenerateDataRecord_pwzhdblp(source,inputList);
+            }
+        }catch (Exception e){
+            System.out.println(e);
+            LogUtils.error(e.getMessage(),DataInjectService.class);
+            ArrayList<String> inputList= CommonFileUtil.read(file);
+            if(inputList==null||inputList.isEmpty()){
+                LogUtils.error("Empty File:"+file.getName(),DataInjectService.class);
+            }else{
+                GenerateDataRecord_pwzhdblp(source,inputList);
+            }
+        }
     }
     private void DataInjectByFile(File file){
         try{
@@ -136,6 +217,7 @@ public class DataInjectService {
                 GenerateDataRecord(inputList);
             }
         }catch (Exception e){
+            System.out.println(e);
             LogUtils.error(e.getMessage(),DataInjectService.class);
             ArrayList<String> inputList= CommonFileUtil.read(file);
             if(inputList==null||inputList.isEmpty()){
@@ -146,6 +228,35 @@ public class DataInjectService {
         }
 
     }
+
+    private  void GenerateDataRecord_pwzhdblp(String source,ArrayList<String> recordList){
+        ArrayList<String> authorList=new ArrayList<String>();
+        HashMap<String,String> paperInfo=new HashMap<String,String>();
+        String paperName=recordList.get(0).split("\t")[0];
+        String[] tempID = paperName.split("/");
+        paperName = tempID[tempID.length-1];
+
+        for(String record:recordList){
+            String[] temp=record.split("\t");
+            if(temp[1].equals("authors"))
+            {
+                authorList.add(temp[2]);
+            }
+            else{
+                paperInfo.put(temp[1],temp[2]);
+            }
+        }
+        Paper paper=generatePaper_pwzhdblp(source,paperName,paperInfo);
+        List<Author> authors=generateAuthorList_pwzhdblp(source,authorList);
+        int i = insertPaperRecord_pwzhdblp(source,paper);
+
+        List<Integer> aIdList=insertAuthorList(authors);
+        if(aIdList!=null&&aIdList.size()>0){
+            insertAuthorPaper(paperName,aIdList);
+        }
+    }
+
+
     private  void GenerateDataRecord(ArrayList<String> recordList){
         ArrayList<String> authorList=new ArrayList<String>();
         HashMap<String,String> paperInfo=new HashMap<String,String>();
@@ -172,6 +283,47 @@ public class DataInjectService {
             insertAuthorPaper(paperName,aIdList);
         }
     }
+
+    private static Paper generatePaper_pwzhdblp(String source,String paperName, Map<String,String> paperInfo){
+        Paper paper=new Paper();
+        paper.setId(paperName);
+        if(paperInfo.containsKey("title"))
+            paper.setTitle(paperInfo.get("title"));
+        if(paperInfo.containsKey("abstract"))
+            paper.setPaperAbstract(paperInfo.get("abstract"));
+        if(paperInfo.containsKey("publisher"))
+            paper.setPublisher(paperInfo.get("publisher"));
+        if(paperInfo.containsKey("downlink")){
+            paper.setUrl(paperInfo.get("downlink"));
+        }
+        if(paperInfo.containsKey("subjects")){
+            paper.setKeywords(paperInfo.get("subjects"));
+        }
+        if(paperInfo.containsKey("time")){
+            String time = paperInfo.get("time");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date time_date = format.parse(time);
+                paper.setTime(time_date);
+            } catch (ParseException e) {
+                System.out.println(e);
+                Date time_date= new java.sql.Date(new Date().getTime());
+                paper.setTime(time_date);
+            }
+        }
+        if(source.equalsIgnoreCase(Configuration.zhihu_path)){
+
+            paper.setType(2);
+        }
+        else if(source.equalsIgnoreCase(Configuration.paperweekly_path)){
+
+            paper.setType(2);
+        }
+
+
+        return paper;
+    }
+
     private static Paper generatePaper(String paperName, Map<String,String> paperInfo){
         Paper paper=new Paper();
         paper.setId(paperName);
@@ -194,6 +346,7 @@ public class DataInjectService {
                 Date time_date = format.parse(time);
                 paper.setTime(time_date);
             } catch (ParseException e) {
+                System.out.println(e);
                 Date time_date= new java.sql.Date(new Date().getTime());
                 paper.setTime(time_date);
             }
@@ -203,6 +356,22 @@ public class DataInjectService {
 
         return paper;
     }
+
+    private static List<Author> generateAuthorList_pwzhdblp(String source,ArrayList<String> authorList){
+        List<Author> authors=new ArrayList<Author>();
+        Author author;
+        for(String a:authorList){
+            String aurl = "https";
+            author=new Author();
+            author.setAuthorname(a);
+            if(source.equalsIgnoreCase(Configuration.paperweekly_path)||source.equalsIgnoreCase(Configuration.zhihu_path)){
+                author.setUrl(aurl);
+            }
+            authors.add(author);
+        }
+        return  authors;
+    }
+
     private static List<Author> generateAuthorList(ArrayList<String> authorList){
         String author_add="https://arxiv.org";
         List<Author> authors=new ArrayList<Author>();
@@ -219,6 +388,52 @@ public class DataInjectService {
         return  authors;
     }
 
+    private  int  insertPaperRecord_pwzhdblp(String source, Paper p){
+        //生成关键字
+
+        //查询是否存在
+        System.out.println(p.getId()+" "+p.getTitle());
+        Paper temp = paperDao.selectByPrimaryKey(p.getId());
+//        Paper temp2 = paperDao.selectByTitle(p.getTitle());
+        Paper temp2;
+        List<Paper> temp2s = paperDao.selectPaperListByTitle(p.getTitle());
+        if(temp2s.size()>0){
+            temp2 = temp2s.get(0);
+        }else{
+            temp2 = null;
+        }
+        if(temp == null&& temp2==null){
+            int line =  paperDao.insert(p);
+            LogUtils.info("insert paper1 "+p.getId()+"信息",DataInjectService.class);
+            return line;
+        }
+        else if(temp!=null && temp2==null){
+//            待改进
+            paperDao.updateByPrimaryKey(p);
+            LogUtils.info("更新paper2 "+p.getId()+"信息",DataInjectService.class);
+
+        }else if(temp==null&&temp2!=null){
+//            temp2.setId(p.getId());
+            paperDao.deleteByPrimaryKey(temp2.getId());
+            int line = paperDao.insert(p);
+            LogUtils.info("insert paper3 "+p.getId()+"信息",DataInjectService.class);
+            return line;
+        }else if(temp!=null&&temp2!=null){
+            if(temp.getId().equals(temp2.getId())){
+                paperDao.updateByPrimaryKey(p);
+                LogUtils.info("更新paper4 "+p.getId()+"信息",DataInjectService.class);
+
+            }else{
+//                待改进
+//                p.setId(temp2.getId());
+                paperDao.deleteByPrimaryKey(temp2.getId());
+                paperDao.updateByPrimaryKey(p);
+                LogUtils.info("更新paper5 "+p.getId()+"信息",DataInjectService.class);
+            }
+        }
+        return 0;
+
+    }
     /**
      * 插入论文
      * @param p 论文p
@@ -238,6 +453,7 @@ public class DataInjectService {
         return 0;
 
     }
+
 
     private  List<Integer> insertAuthorList(List<Author> authorList){
 
