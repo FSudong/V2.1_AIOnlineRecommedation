@@ -1,22 +1,19 @@
 package com.seu.kse.service.recommender.model.CB;
 
-import com.seu.kse.bean.Paper;
-import com.seu.kse.bean.User;
-import com.seu.kse.bean.UserPaperBehavior;
-import com.seu.kse.bean.UserTagKey;
+import com.seu.kse.bean.*;
 import com.seu.kse.dao.PaperMapper;
+import com.seu.kse.dao.PaperTagMapper;
+import com.seu.kse.dao.TagMapper;
+import com.seu.kse.service.recommender.ReccommendUtils;
 import com.seu.kse.service.recommender.RecommenderCache;
 import com.seu.kse.service.recommender.feature.TFIDFProcessor;
-import com.seu.kse.service.recommender.ReccommendUtils;
 import com.seu.kse.service.recommender.feature.Word2vecProcessor;
 import com.seu.kse.service.recommender.model.PaperSim;
 import com.seu.kse.service.retrieval.Retrieval;
 import com.seu.kse.util.LogUtils;
-import com.seu.kse.util.Utils;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.springframework.stereotype.Service;
-
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -28,9 +25,21 @@ import java.util.*;
 public class CBKNNModel {
     @Resource
     private PaperMapper paperDao;
+    @Resource
+    private TagMapper tagDao;
+    @Resource
+    private PaperTagMapper paperTagDao;
+
+    public String getHeadFatherTag(String tagName){
+        Tag tag = tagDao.selectByTagName(tagName);
+        if(tag.getFathername().equals("head")){
+            return tag.getTagname();
+        }
+        return getHeadFatherTag(tag.getFathername());
+    }
 
 
-    public void init(boolean open,List<Paper> trainPapers,List<Paper> allPapers,  int type){
+    public void init(boolean open, List<Paper> trainPapers, List<Paper> allPapers, int type){
         RecommenderCache.similarPaperList = new HashMap<String, List<PaperSim>>();
 
         if(open){
@@ -105,8 +114,22 @@ public class CBKNNModel {
             //计算其他论文和history论文中的相似度
             for(Paper paper : papers){
                 String pid = paper.getId();
+//                能不能得到向量还是一个问题
                 double[] vec = RecommenderCache.paperVecs.get(pid);
-                if(vec == null) continue;
+//                if(vec == null) continue;
+//                无向量就构造向量
+                if(vec == null) {
+                    Paper paperExistInMysql = paperDao.selectByPrimaryKey(pid);
+                    if (paperExistInMysql == null) continue;
+                    String abs = paperExistInMysql.getPaperAbstract();
+                    String title = paperExistInMysql.getTitle();
+                    String content = abs + " " + title;
+                    INDArray cur_vec = RecommenderCache.TFIDF.transform(content);
+                    vec = new double[cur_vec.length()];
+                    for(int k = 0 ; k<cur_vec.length(); k++){
+                        vec[k] = cur_vec.getDouble(k);
+                    }
+                }
                 // cal every paper and history's paper sim
                 double everySim = 0.0;
                 boolean readed = false;
@@ -117,11 +140,12 @@ public class CBKNNModel {
                         continue;
                     }
                     double sim = ReccommendUtils.cosinSimilarity(his.getValue(),vec);
-                    everySim = weight.get(his.getKey())* sim;
+                    everySim = everySim + weight.get(his.getKey())* sim;
                     count++;
                 }
                 if(!readed){
-                    everySim/=count;
+                    everySim=everySim / count;
+                    System.out.println("论文相似度："+everySim+" "+count+" "+user.getUname()+" "+paper.getTitle());
                     PaperSim paperSim = new PaperSim(pid, everySim);
                     if(maxKPaper.size() < user.getPushnum()){
                         maxKPaper.add(paperSim);
@@ -146,6 +170,7 @@ public class CBKNNModel {
         RecommenderCache.userRecommend.put(user.getMailbox(),ranks);
     }
 
+
     public Set<Paper> coarseRank(List<UserTagKey> userTags){
         Set<Paper> coarseRankRes = new HashSet<Paper>();
         LogUtils.info("粗排中...",this.getClass());
@@ -158,8 +183,20 @@ public class CBKNNModel {
         return coarseRankRes;
     }
 
+    public Set<Paper> coarseRankLess(List<UserTagKey> userTags){
+        Set<Paper> coarseRankRes = new HashSet<Paper>();
+        LogUtils.info("粗排中...",this.getClass());
+        for(UserTagKey tag : userTags){
+            LogUtils.info(tag.getTagname()+"检索中",this.getClass());
+            if(tag!=null&&tag.getTagname()!=null&&tag.getTagname().length()>=2){
+                coarseRankRes.addAll(Retrieval.retrievalless(tag.getTagname()));
+            }
+        }
+        return coarseRankRes;
+    }
+
     public void model(List<Paper> papers, Map<String,List<UserPaperBehavior>> users_paper_behaves, List<User> users,
-                      List<Paper> newPapers, Map<String, List<UserTagKey>> userTags){
+                      List<Paper> newPapers, Map<String, List<UserTagKey>> userTags, Map<String, List<UserTagKey>> usersHeadTag){
         //get the user's papers
         //1 . get all Users
         //2. get every user's papers
@@ -170,17 +207,61 @@ public class CBKNNModel {
         for(User user : users){
             //检索
             Set<Paper> candidatePapers = new HashSet<Paper>();
-            if(userTags!=null&& userTags.size()==0){
-                candidatePapers = coarseRank(userTags.get(user.getId()));
+            List<UserTagKey> thisUserHeadTagList = new ArrayList<UserTagKey>();
+            List<UserTagKey> thisUserTagList = new ArrayList<UserTagKey>();
+            if(userTags!=null && userTags.size()!=0){
+                thisUserTagList = userTags.get(user.getId());
             }
-            if(candidatePapers.size()==0){
+            if(usersHeadTag!=null && usersHeadTag.size()!=0){
+                thisUserHeadTagList = usersHeadTag.get(user.getId());
+            }
+
+
+            if(userTags!=null&& userTags.size()!=0 && thisUserTagList !=null && thisUserTagList.size()!=0 ){
+                candidatePapers.addAll(coarseRankLess(userTags.get(user.getId())));
+            }
+            //使用并查集选取新论文papers中在同一大分类下的论文
+            if(usersHeadTag!=null && usersHeadTag.size()>0 && thisUserHeadTagList!=null && thisUserHeadTagList.size()!=0){
+                List<String> thisUserHeadTagnameList = new ArrayList<String>();
+                for(UserTagKey utk:thisUserHeadTagList){
+                    thisUserHeadTagnameList.add(utk.getTagname());
+                }
+                for(Paper paper:papers){
+
+                    try {
+                        List<PaperTagKey> paperTagKeys = paperTagDao.selectByPID(paper.getId());
+                        if(paperTagKeys==null || paperTagKeys.size()==0)
+                            continue;
+                        for(UserTagKey utk:thisUserHeadTagList){
+                            System.out.print("user:"+utk.getTagname()+";");
+                        }
+                        for(PaperTagKey ptk :paperTagKeys){
+                            System.out.print("paper:"+getHeadFatherTag(ptk.getTagname())+";");
+                        }
+                        System.out.println(" ");
+
+//                        System.out.println(thisUserHeadTagList.get().toString()+"\n::::"+paperTagKeys.toString());
+                        for(PaperTagKey paperTagKey:paperTagKeys){
+                            String paperHeadTagname = getHeadFatherTag(paperTagKey.getTagname());
+//                            UserTagKey userTagKey = new UserTagKey(user.getId(),paperHeadTag);
+                            if(thisUserHeadTagnameList.contains(paperHeadTagname)){
+                                candidatePapers.add(paper);
+                                break;
+                            }
+                        }
+                    }catch(Exception e){
+                        System.out.println(e);
+                    }
+                }
+            }
+            //10为retrive中的limit的值
+            if(candidatePapers.size()<= thisUserHeadTagList.size()*10){
                 candidatePapers.addAll(papers);
             }
             // get the k
             modelByUser(user, candidatePapers, users_paper_behaves.get(user.getId()), newPapers);
         }
         LogUtils.info("用户推荐列表计算完成",this.getClass());
-
     }
 
     public void modelByMatrix(List<Paper> papers, Map<String,List<UserPaperBehavior>> users_paper_behaves, List<User> users,
@@ -205,7 +286,7 @@ public class CBKNNModel {
         LogUtils.info("用户推荐列表计算完成",this.getClass());
     }
 
-    public void constructUserPaperMatrix(List<User> users,  Map<String,List<UserPaperBehavior>> users_paper_behaves){
+    public void constructUserPaperMatrix(List<User> users, Map<String,List<UserPaperBehavior>> users_paper_behaves){
         INDArray[] usersMatrixArray = new INDArray[users.size()];
         int i = 0 ;
         RecommenderCache.userMapRowID = new HashMap<String, Integer>();
@@ -237,7 +318,7 @@ public class CBKNNModel {
         return false;
     }
 
-    public void modelByUserMatrix(User user, Set<Paper> papers,List<UserPaperBehavior> userPaperBehaviors){
+    public void modelByUserMatrix(User user, Set<Paper> papers, List<UserPaperBehavior> userPaperBehaviors){
         int rowID = RecommenderCache.userMapRowID.get(user.getId());
         List<PaperSim> rank = new ArrayList<PaperSim>();
         Queue<PaperSim> maxKPaper = new PriorityQueue<PaperSim>(user.getPushnum());

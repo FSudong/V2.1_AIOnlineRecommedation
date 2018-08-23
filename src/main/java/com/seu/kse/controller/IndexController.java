@@ -1,27 +1,22 @@
 package com.seu.kse.controller;
 
-import com.seu.kse.quartz.RecommederTask;
+import com.seu.kse.bean.*;
+import com.seu.kse.dao.UserAuthorFocusMapper;
+import com.seu.kse.dao.UserPaperBehaviorMapper;
+import com.seu.kse.service.impl.AuthorService;
+import com.seu.kse.service.impl.PaperService;
 import com.seu.kse.service.impl.TaggingService;
 import com.seu.kse.service.impl.UserPaperService;
 import com.seu.kse.service.retrieval.Retrieval;
 import com.seu.kse.util.Constant;
 import com.seu.kse.util.LogUtils;
 import com.seu.kse.util.Utils;
-import com.seu.kse.bean.*;
-import com.seu.kse.dao.UserAuthorFocusMapper;
-import com.seu.kse.dao.UserPaperBehaviorMapper;
-
-
-import com.seu.kse.service.impl.AuthorService;
-import com.seu.kse.service.impl.PaperService;
-import it.unimi.dsi.fastutil.ints.Int2IntSortedMaps;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.stereotype.Controller;
@@ -36,9 +31,8 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yaosheng on 2017/5/22.
@@ -92,7 +86,7 @@ public class IndexController {
         }
 //        List<Paper> papers=paperService.selectPaperByTime(pageNum*limit, (pageNum+1)*limit);
 //        按照时间和类型排序
-        List<Paper> papers = paperService.selectPaperByTimeSource(pageNum*limit, (pageNum+1)*limit);
+        List<Paper> papers = paperService.selectPaperByTimeSource(pageNum*limit, limit);
         model.addAttribute("papers",papers);
         model.addAttribute("previousPage",pageNum>0?(pageNum-1):pageNum);
         model.addAttribute("nextPage",pageNum+1);

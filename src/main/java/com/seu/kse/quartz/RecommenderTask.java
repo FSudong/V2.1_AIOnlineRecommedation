@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class RecommederTask {
+public class RecommenderTask {
 
     private EmailSender emailSender;
     private final PaperMapper paperDao;
@@ -31,7 +31,7 @@ public class RecommederTask {
 
 
     @Autowired
-    public RecommederTask(PaperMapper paperDao, UserMapper userDao, UserPaperBehaviorMapper userPaperBehaviorDao){
+    public RecommenderTask(PaperMapper paperDao, UserMapper userDao, UserPaperBehaviorMapper userPaperBehaviorDao){
         this.paperDao = paperDao;
         this.userDao = userDao;
         this.userPaperBehaviorDao = userPaperBehaviorDao;
@@ -44,12 +44,12 @@ public class RecommederTask {
 
     }
     public void execute(){
-        LogUtils.info("开始推荐......",RecommederTask.class);
+        LogUtils.info("开始推荐......",RecommenderTask.class);
 
 
         recommend();
 
-        LogUtils.info("结束推荐......",RecommederTask.class);
+        LogUtils.info("结束推荐......",RecommenderTask.class);
 
     }
 

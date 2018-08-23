@@ -1,7 +1,7 @@
 package com.seu.kse.service.retrieval;
 
 import com.seu.kse.bean.Paper;
-import com.seu.kse.quartz.RecommederTask;
+import com.seu.kse.quartz.RecommenderTask;
 import com.seu.kse.util.Constant;
 import com.seu.kse.util.LogUtils;
 import org.elasticsearch.action.search.SearchResponse;
@@ -29,6 +29,11 @@ public class Retrieval {
 
     public static List<Paper> retrieval(String tag){
         SearchHits hits = search(tag, 0.6f, 100);
+        return getPapers(hits);
+    }
+
+    public static List<Paper> retrievalless(String tag){
+        SearchHits hits = search(tag, 0.9f, 5);
         return getPapers(hits);
     }
 
@@ -61,7 +66,7 @@ public class Retrieval {
             client = new PreBuiltTransportClient(Settings.EMPTY).
                     addTransportAddress(new TransportAddress(InetAddress.getByName("120.78.165.80"), 9300));
             MultiMatchQueryBuilder multiMatchQueryBuilder = new MultiMatchQueryBuilder(terms, Constant.ES_SEARCH_FIELDS);
-            LogUtils.info("开始查询ES......",RecommederTask.class);
+            LogUtils.info("开始查询ES......",RecommenderTask.class);
             SearchResponse search_response = client.prepareSearch(Constant.ES_INDEX)
                     .setTypes(Constant.ES_TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)

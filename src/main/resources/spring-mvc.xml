@@ -27,7 +27,7 @@
         <property name="suffix" value=".jsp" />
     </bean>
     <!--推荐-->
-    <bean id="recommederTask" class="com.seu.kse.quartz.RecommederTask" />
+    <bean id="recommederTask" class="com.seu.kse.quartz.RecommenderTask" />
     <bean id="jobDetail1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="recommederTask" />
         <property name="targetMethod" value="execute" />

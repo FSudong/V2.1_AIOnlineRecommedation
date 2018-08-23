@@ -6,16 +6,10 @@ import com.seu.kse.bean.Paper;
 import com.seu.kse.dao.AuthorMapper;
 import com.seu.kse.dao.AuthorPaperMapper;
 import com.seu.kse.dao.PaperMapper;
-
-import com.seu.kse.quartz.DataInjectTask;
 import com.seu.kse.util.CommonFileUtil;
 import com.seu.kse.util.Configuration;
 import com.seu.kse.util.LogUtils;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
-import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -100,8 +94,8 @@ public class DataInjectService {
             calendar.setTime(cur);
             calendar.add(calendar.DATE,0);//把日期往后增加一天.整数往后推,负数往前移动
             cur=calendar.getTime(); //这个时间就是日期往后推一天的结果
-            int source_splits_length = source.split("\\\\").length;
-            String sourceName = source.split("\\\\")[source_splits_length-2];
+            int source_splits_length = source.split("/").length;
+            String sourceName = source.split("/")[source_splits_length-2];
             while (cur.before(now)||cur.equals(now)) {
                 try {
                     LogUtils.info("process cur :" + cur+sourceName, DataInjectService.class);
@@ -284,7 +278,7 @@ public class DataInjectService {
         }
     }
 
-    private static Paper generatePaper_pwzhdblp(String source,String paperName, Map<String,String> paperInfo){
+    private static Paper generatePaper_pwzhdblp(String source, String paperName, Map<String,String> paperInfo){
         Paper paper=new Paper();
         paper.setId(paperName);
         if(paperInfo.containsKey("title"))
@@ -357,7 +351,7 @@ public class DataInjectService {
         return paper;
     }
 
-    private static List<Author> generateAuthorList_pwzhdblp(String source,ArrayList<String> authorList){
+    private static List<Author> generateAuthorList_pwzhdblp(String source, ArrayList<String> authorList){
         List<Author> authors=new ArrayList<Author>();
         Author author;
         for(String a:authorList){

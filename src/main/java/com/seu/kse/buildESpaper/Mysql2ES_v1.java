@@ -1,12 +1,9 @@
 package com.seu.kse.buildESpaper;
 
 import com.seu.kse.bean.Paper;
-import com.seu.kse.service.impl.PaperService;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 
-import javax.annotation.Resource;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -20,7 +17,7 @@ public class Mysql2ES_v1 {
 
         List<Paper> papers = new ArrayList<Paper>();
         //要改成int 防止越界
-        int start = 46000;
+        int start = 0;
         int length = 1000;
 //        int i = 0;
         try {

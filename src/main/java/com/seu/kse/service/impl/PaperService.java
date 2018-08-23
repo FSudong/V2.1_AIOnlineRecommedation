@@ -1,7 +1,6 @@
 package com.seu.kse.service.impl;
 
 import com.seu.kse.bean.Paper;
-import com.seu.kse.bean.PaperSims;
 import com.seu.kse.dao.PaperMapper;
 import com.seu.kse.service.recommender.ReccommendUtils;
 import com.seu.kse.service.recommender.RecommenderCache;
@@ -29,7 +28,7 @@ public class PaperService {
      * @param
      * @return
      */
-    public List<Paper> selectPaperByTime(int start,int end){
+    public List<Paper> selectPaperByTime(int start, int end){
         List<Paper> papers=paperdao.selectPaperOrderByTime(start,end,10);
         return papers;
     }
@@ -38,8 +37,8 @@ public class PaperService {
     * @
     * @return 由时间和type共同排序
     **/
-    public List<Paper> selectPaperByTimeSource(int start, int end){
-        List<Paper> papers = paperdao.selectPaperOrderByTimeSource(start,end,10);
+    public List<Paper> selectPaperByTimeSource(int offset, int limit){
+        List<Paper> papers = paperdao.selectPaperOrderByTimeSource(offset,limit,10);
         return papers;
     }
 

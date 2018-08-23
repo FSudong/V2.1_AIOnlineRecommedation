@@ -8,17 +8,14 @@ import com.seu.kse.dao.PaperMapper;
 import com.seu.kse.dao.PaperTagMapper;
 import com.seu.kse.dao.TagMapper;
 import com.seu.kse.dao.UserTagMapper;
-import com.seu.kse.quartz.RecommederTask;
+import com.seu.kse.quartz.RecommenderTask;
 import com.seu.kse.service.retrieval.Retrieval;
 import com.seu.kse.util.Constant;
 import com.seu.kse.util.LogUtils;
-
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -50,15 +47,15 @@ public class TaggingService {
         //更新所有论文的标签
         List<Tag> tags = tagDao.selectAllTag();
         for(Tag tag : tags){
-            LogUtils.info(tags.size()+" "+tag.getTagname(),RecommederTask.class);
+            LogUtils.info(tags.size()+" "+tag.getTagname(),RecommenderTask.class);
             List<String> ids = getIDS(Retrieval.search(tag.getTagname(),0.8f,200));
             for(String id : ids){
-                LogUtils.info(ids.size()+id,RecommederTask.class);
+                LogUtils.info(ids.size()+id,RecommenderTask.class);
                 PaperTagKey key = new PaperTagKey();
                 key.setTagname(tag.getTagname());
                 key.setPid(id);
                 try{
-                    LogUtils.info("存入paperTag......",RecommederTask.class);
+                    LogUtils.info("存入paperTag......",RecommenderTask.class);
                     paperTagDao.insert(key);
 //                    System.out.println(tag.getTagname()+"::"+id+" saved");
                 }catch (Exception e){
@@ -75,18 +72,18 @@ public class TaggingService {
         //更新所有论文的标签
         List<Tag> tags = tagDao.selectAllTag();
         int tagssize = tags.size();
-        int i = 437;
+        int i = 1698;
         for(;i < tagssize;i++){
             Tag tag = tags.get(i);
-            LogUtils.info(tags.size()+" "+i+" "+tag.getTagname(),RecommederTask.class);
-            List<String> ids = getIDS(Retrieval.search(tag.getTagname(),0.9f,100));
+            LogUtils.info(tags.size()+" "+i+" "+tag.getTagname(),RecommenderTask.class);
+            List<String> ids = getIDS(Retrieval.search(tag.getTagname(),0.85f,200));
             for(String id : ids){
-                LogUtils.info(ids.size()+id,RecommederTask.class);
+                LogUtils.info(ids.size()+id,RecommenderTask.class);
                 PaperTagKey key = new PaperTagKey();
                 key.setTagname(tag.getTagname());
                 key.setPid(id);
                 try{
-                    LogUtils.info("存入paperTag......",RecommederTask.class);
+                    LogUtils.info("存入paperTag......",RecommenderTask.class);
                     paperTagDao.insert(key);
 //                    System.out.println(tag.getTagname()+"::"+id+" saved");
                 }catch (Exception e){
@@ -280,5 +277,4 @@ public class TaggingService {
     }
 
     //
-
 }
