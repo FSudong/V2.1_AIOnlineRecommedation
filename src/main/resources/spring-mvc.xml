@@ -62,6 +62,16 @@
         <property name="concurrent" value="false" />
     </bean>
 
+    <!--&lt;!&ndash;新数据加入ES&ndash;&gt;-->
+    <!--<bean id="newPaper2ES" class="com.seu.kse.buildESpaper.mysql2es" />-->
+    <!--<bean id="jobDetail5" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
+        <!--<property name="targetObject" ref="newPaper2ES" />-->
+        <!--<property name="targetMethod" value="execute" />-->
+
+        <!--<property name="concurrent" value="false" />-->
+    <!--</bean>-->
+
+
 
 
     <bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
@@ -88,6 +98,13 @@
         <!--表达式，每 天 执行一次-->
         <property name="cronExpression" value="0 0 8 * * ?"  />
     </bean>
+
+    <!--<bean id="trigger5" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">-->
+        <!--<property name="jobDetail" ref="jobDetail5" />-->
+        <!--&lt;!&ndash;表达式，每 天 执行一次&ndash;&gt;-->
+        <!--<property name="cronExpression" value="0 45 18 * * ?"  />-->
+    <!--</bean>-->
+
 
     <!--  总管理类如果将lazy-init='false'那么容器启动就会执行调度程序   -->
     <bean id="startQuertz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false" >

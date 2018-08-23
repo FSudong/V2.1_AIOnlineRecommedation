@@ -84,7 +84,11 @@ public class CBKNNModel {
         HashMap<String, Integer> weight = new HashMap<String, Integer>();
         List<PaperSim> ranks = new ArrayList<PaperSim>();
         Queue<PaperSim> maxKPaper = new PriorityQueue<PaperSim>(user.getPushnum());
-
+//        获取用户所有读过的文章id
+        List<String> userPaperIds = new ArrayList<String>();
+        for(UserPaperBehavior upb:user_paper_behaves){
+            userPaperIds.add(upb.getPid());
+        }
         Random random = new Random();
         if(user_paper_behaves != null && user_paper_behaves.size() !=0){
             //calculate the k-nearest paper for user
@@ -93,6 +97,7 @@ public class CBKNNModel {
                 int score = up.getInterest();
                 String pid = up.getPid();
                 double[] vec = RecommenderCache.paperVecs.get(pid);
+//                注意为了降低计算复杂度 只将用户有评分和本身就存在向量的 文章转化为向量history中只存了这些文章
                 if(vec!=null){
                     history.put(pid, vec);
                     weight.put(pid, score);
@@ -135,9 +140,9 @@ public class CBKNNModel {
                 boolean readed = false;
                 int count = 0;
                 for(Map.Entry<String, double[]> his : history.entrySet()){
-                    if(history.containsKey(pid)) {
+                    if(history.containsKey(pid) || userPaperIds.contains(pid)) {
                         readed = true;
-                        continue;
+                        break;
                     }
                     double sim = ReccommendUtils.cosinSimilarity(his.getValue(),vec);
                     everySim = everySim + weight.get(his.getKey())* sim;

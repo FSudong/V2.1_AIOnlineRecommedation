@@ -1,6 +1,10 @@
 package com.seu.kse.controller;
 
 import com.seu.kse.bean.*;
+import com.seu.kse.buildESpaper.Configuration;
+import com.seu.kse.buildESpaper.DataSource;
+import com.seu.kse.buildESpaper.IndexFile;
+import com.seu.kse.buildESpaper.Mysql2ES_v1;
 import com.seu.kse.dao.UserAuthorFocusMapper;
 import com.seu.kse.dao.UserPaperBehaviorMapper;
 import com.seu.kse.service.impl.AuthorService;
@@ -111,10 +115,21 @@ public class IndexController {
     @RequestMapping("/tagpaper")
     public String tagPaper(HttpServletRequest request,HttpSession session, Model model){
         taggingService.init2();
-        return "";
+        return "/index";
     }
 
+    @RequestMapping("/mysql2es")
+    public String mysql2es(HttpServletRequest request,HttpSession session, Model model){
+        try {
 
+            IndexFile.indexFaqData(DataSource.PAPER);
+//            将最新的数据传入es
+            Mysql2ES_v1.new2es(Configuration.ES_INDEX_PAPER, Configuration.ES_TYPE_PAPER, -3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "/index";
+    }
 
     @Transactional
     @RequestMapping(value="/search",produces="text/plain;charset=UTF-8")

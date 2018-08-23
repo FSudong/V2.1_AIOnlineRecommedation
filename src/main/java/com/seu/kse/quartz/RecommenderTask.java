@@ -79,7 +79,7 @@ public class RecommenderTask {
             List<String> paperTitles = new ArrayList<String>();
             int pushNum = user.getPushnum();
             for(int i=0;i<pushNum;i++){
-                if(i>e.getValue().size()){
+                if(i>(e.getValue().size()-1)){
                     break;
                 }
                 String paperID = val.get(i).getPid();
