@@ -209,6 +209,19 @@ public class CBKNNModel {
         //4. cal knn paper for user
         LogUtils.info("计算用户推荐列表...",this.getClass());
         RecommenderCache.userRecommend = new HashMap<String, List<PaperSim>>();
+        //获取所有paper 对应的顶级标签 2018-08-25 fsd
+        Map<String,List<String>> papersHeadTags = new HashMap<String, List<String>>();
+        for(Paper paper:papers){
+            List<PaperTagKey> paperTagKeys = paperTagDao.selectByPID(paper.getId());
+            List<String> paperHeadTags = new ArrayList<String>();
+            for(PaperTagKey ptk:paperTagKeys){
+                String paperHeadTag = getHeadFatherTag(ptk.getTagname());
+                if(!paperHeadTags.contains(paperHeadTag)){
+                    paperHeadTags.add(paperHeadTag);
+                }
+            }
+            papersHeadTags.put(paper.getId(),paperHeadTags);
+        }
         for(User user : users){
             //检索
             Set<Paper> candidatePapers = new HashSet<Paper>();
@@ -221,7 +234,7 @@ public class CBKNNModel {
                 thisUserHeadTagList = usersHeadTag.get(user.getId());
             }
 
-
+            //利用用户的标签粗选出一些文章
             if(userTags!=null&& userTags.size()!=0 && thisUserTagList !=null && thisUserTagList.size()!=0 ){
                 candidatePapers.addAll(coarseRankLess(userTags.get(user.getId())));
             }
@@ -231,31 +244,45 @@ public class CBKNNModel {
                 for(UserTagKey utk:thisUserHeadTagList){
                     thisUserHeadTagnameList.add(utk.getTagname());
                 }
+//                for(Paper paper:papers){
+//
+//                    try {
+//                        List<PaperTagKey> paperTagKeys = paperTagDao.selectByPID(paper.getId());
+//                        if(paperTagKeys==null || paperTagKeys.size()==0)
+//                            continue;
+//                        for(UserTagKey utk:thisUserHeadTagList){
+//                            System.out.print("user:"+utk.getTagname()+";");
+//                        }
+//                        for(PaperTagKey ptk :paperTagKeys){
+//                            System.out.print("paper:"+getHeadFatherTag(ptk.getTagname())+";");
+//                        }
+//                        System.out.println(" ");
+//
+////                        System.out.println(thisUserHeadTagList.get().toString()+"\n::::"+paperTagKeys.toString());
+//                        for(PaperTagKey paperTagKey:paperTagKeys){
+//                            String paperHeadTagname = getHeadFatherTag(paperTagKey.getTagname());
+////                            UserTagKey userTagKey = new UserTagKey(user.getId(),paperHeadTag);
+//                            if(thisUserHeadTagnameList.contains(paperHeadTagname)){
+//                                candidatePapers.add(paper);
+//                                break;
+//                            }
+//                        }
+//                    }catch(Exception e){
+//                        System.out.println(e);
+//                    }
+//                }
+//                由paper顶级标签，选出用户标签切合的paper
                 for(Paper paper:papers){
-
-                    try {
-                        List<PaperTagKey> paperTagKeys = paperTagDao.selectByPID(paper.getId());
-                        if(paperTagKeys==null || paperTagKeys.size()==0)
-                            continue;
-                        for(UserTagKey utk:thisUserHeadTagList){
-                            System.out.print("user:"+utk.getTagname()+";");
-                        }
-                        for(PaperTagKey ptk :paperTagKeys){
-                            System.out.print("paper:"+getHeadFatherTag(ptk.getTagname())+";");
-                        }
-                        System.out.println(" ");
-
-//                        System.out.println(thisUserHeadTagList.get().toString()+"\n::::"+paperTagKeys.toString());
-                        for(PaperTagKey paperTagKey:paperTagKeys){
-                            String paperHeadTagname = getHeadFatherTag(paperTagKey.getTagname());
-//                            UserTagKey userTagKey = new UserTagKey(user.getId(),paperHeadTag);
-                            if(thisUserHeadTagnameList.contains(paperHeadTagname)){
+                    List<String> pheadtags = papersHeadTags.get(paper.getId());
+                    if(pheadtags!=null && pheadtags.size()>0){
+                        for(String pht:pheadtags){
+                            if(thisUserHeadTagnameList.contains(pht)){
                                 candidatePapers.add(paper);
                                 break;
                             }
                         }
-                    }catch(Exception e){
-                        System.out.println(e);
+                    }else {
+                        candidatePapers.add(paper);
                     }
                 }
             }
