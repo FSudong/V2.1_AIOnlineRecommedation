@@ -32,6 +32,9 @@ public class CBKNNModel {
 
     public String getHeadFatherTag(String tagName){
         Tag tag = tagDao.selectByTagName(tagName);
+        if(tag ==null || tag.getFathername() == null || tag.getFathername().equalsIgnoreCase("")|| tag.getTagname().equalsIgnoreCase(tag.getFathername())){
+            System.out.println("getheadfathertag:" + tag.getTagname()+"::"+tag.getFathername());
+        }
         if(tag.getFathername().equals("head")){
             return tag.getTagname();
         }

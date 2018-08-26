@@ -75,8 +75,9 @@ public class RecommendationService {
         //若需要更新模型，重新计算论文向量
         //生产文件
         LogUtils.info("model update init!",RecommendationService.class);
-
-        List<Paper> papers = paperDao.selectLimitArxiv(8000);
+        //20180826 backup writted by yaosheng
+//        List<Paper> papers = paperDao.selectLimitArxiv(8000);
+        List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,500,10);
         System.out.println(papers.size());
         List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,5,10);
         List<User> users = userDao.getAllUser();

@@ -70,7 +70,7 @@ public class DataInjectService {
                 DataInjectByFile(f);
 
             LogUtils.info("开始导入数据！",DataInjectService.class);
-
+            dataInject_init_pwzhdblp(Configuration.paperweekly_path, Configuration.zhihu_path);
 
         }catch (Exception e){
             System.out.println(e);
@@ -79,6 +79,7 @@ public class DataInjectService {
         }
 
     }
+
     public void dataInject_init_pwzhdblp(String... sources){
         for(String source : sources) {
 //            Calendar c = Calendar.getInstance();

@@ -137,7 +137,10 @@ public class PaperInfoController {
         List<String> tags=new ArrayList<String>();
         //获取标签
         List<PaperTagKey> tagkey =paperTagDao.selectByPID(paper.getId());
-
+        //若标签大于20个只保留20个
+        if(tagkey.size()>20){
+            tagkey = tagkey.subList(0,19);
+        }
         for(PaperTagKey t : tagkey){
             tags.add(t.getTagname());
         }

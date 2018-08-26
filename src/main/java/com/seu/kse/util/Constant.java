@@ -25,7 +25,7 @@ public class Constant {
     public static String[] ES_FIELDS ={ES_FIELD_ABSTRACT,ES_FIELD_TITLE,ES_FIELD_AUTHOR,ES_FIELD_ID,
             ES_FIELD_KEYWORDS,ES_FIELD_TIME,ES_FIELD_URL,ES_FIELD_TYPE,ES_FIELD_PUBLISHER};
     public static boolean isTest = false;
-    public static String logPath = "log/ssm.txt";
+    public static String logPath = "logs/ssm.txt";
     public static String VISIT_ID = "visitor";
     public static String SEARCH_LOG_KEYWORD = "search";
     public static String SEARCH_LOG_SPILT = ":";

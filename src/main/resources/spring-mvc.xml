@@ -77,26 +77,26 @@
     <bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail1" />
         <!--表达式，每 天 执行一次-->
-        <property name="cronExpression" value="0 0 10 * * ?" />
+        <property name="cronExpression" value="0 30 10 * * ?" />
     </bean>
 
     <bean id="trigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail2" />
         <!--表达式，每 天 执行一次-->
-        <property name="cronExpression" value="0 0 6 * * ?" />
+        <property name="cronExpression" value="0 10 7 * * ?" />
     </bean>
 
 
     <bean id="trigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail3" />
         <!--表达式，每 天 执行一次-->
-        <property name="cronExpression" value="0 0 7 * * ?"  />
+        <property name="cronExpression" value="0 40 8 * * ?"  />
     </bean>
 
     <bean id="trigger4" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="jobDetail3" />
+        <property name="jobDetail" ref="jobDetail4" />
         <!--表达式，每 天 执行一次-->
-        <property name="cronExpression" value="0 0 8 * * ?"  />
+        <property name="cronExpression" value="0 40 9 * * ?"  />
     </bean>
 
     <!--<bean id="trigger5" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">-->
