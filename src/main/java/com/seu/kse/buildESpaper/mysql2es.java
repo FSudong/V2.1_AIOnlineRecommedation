@@ -1,8 +1,11 @@
 package com.seu.kse.buildESpaper;
 
+import org.elasticsearch.search.aggregations.metrics.ParsedSingleValueNumericMetricsAggregation;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
-
+@Service
 public class mysql2es {
 
 //    private final mysql2es m2s;
@@ -23,18 +26,17 @@ public class mysql2es {
 //        }
 //    }
 
-    public static void main(String[] args) {
-
+    public void  execute(){
         try {
-              //删除标签
+            //删除标签
 //              DeleteIndex.deleteIndex(Configuration.ES_INDEX_PAPER);
-              //索引paper
-              IndexFile.indexFaqData(DataSource.PAPER);
-              //数据库信息全部传到es
+            //索引paper
+            IndexFile.indexFaqData(DataSource.PAPER);
+            //数据库信息全部传到es
 //              Mysql2ES_v1.all2es(Configuration.ES_INDEX_PAPER,Configuration.ES_TYPE_PAPER);
 //            将最新的数据传入es
-             Mysql2ES_v1.new2es(Configuration.ES_INDEX_PAPER, Configuration.ES_TYPE_PAPER, -3);
-              //为论文打标签
+            Mysql2ES_v1.new2es(Configuration.ES_INDEX_PAPER, Configuration.ES_TYPE_PAPER, -3);
+            //为论文打标签
 
 //            IndexFile indexFile = new IndexFile();
 //            IndexFile.initTest(Configuration.ES_INDEX_PAPER,Configuration.ES_TYPE_PAPER);
@@ -46,4 +48,28 @@ public class mysql2es {
             e.printStackTrace();
         }
     }
+
+//    public static void main(String[] args) {
+//
+//        try {
+//              //删除标签
+////              DeleteIndex.deleteIndex(Configuration.ES_INDEX_PAPER);
+//              //索引paper
+//              IndexFile.indexFaqData(DataSource.PAPER);
+//              //数据库信息全部传到es
+////              Mysql2ES_v1.all2es(Configuration.ES_INDEX_PAPER,Configuration.ES_TYPE_PAPER);
+////            将最新的数据传入es
+//             Mysql2ES_v1.new2es(Configuration.ES_INDEX_PAPER, Configuration.ES_TYPE_PAPER, -3);
+//              //为论文打标签
+//
+////            IndexFile indexFile = new IndexFile();
+////            IndexFile.initTest(Configuration.ES_INDEX_PAPER,Configuration.ES_TYPE_PAPER);
+//
+////            System.out.println("end");
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
