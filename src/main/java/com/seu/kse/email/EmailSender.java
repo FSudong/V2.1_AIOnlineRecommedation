@@ -18,7 +18,7 @@ import java.util.Properties;
 public class EmailSender {
 
     private String userName = Constant.sender;
-    private String psw= "wlxdueyxztuabcch";
+    private String psw= "wyvclnbvapjabbfa";
     private String host;
     private String from;
     private Properties proes;
