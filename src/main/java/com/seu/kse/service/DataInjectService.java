@@ -70,7 +70,7 @@ public class DataInjectService {
                 DataInjectByFile(f);
 
             LogUtils.info("开始导入数据！",DataInjectService.class);
-            dataInject_init_pwzhdblp(Configuration.paperweekly_path, Configuration.zhihu_path);
+            dataInject_init_pwzhdblp(Configuration.paperweekly_path, Configuration.zhihu_path, Configuration.nips_path);
 
         }catch (Exception e){
             System.out.println(e);
@@ -230,7 +230,7 @@ public class DataInjectService {
         String paperName=recordList.get(0).split("\t")[0];
         String[] tempID = paperName.split("/");
         paperName = tempID[tempID.length-1];
-
+        //如果为authors 就要存入list,否则就存储为字典
         for(String record:recordList){
             String[] temp=record.split("\t");
             if(temp[1].equals("authors"))
@@ -313,6 +313,9 @@ public class DataInjectService {
         else if(source.equalsIgnoreCase(Configuration.paperweekly_path)){
 
             paper.setType(2);
+        }else if(source.equalsIgnoreCase(Configuration.nips_path)){
+
+            paper.setType(0);
         }
 
 
@@ -359,7 +362,8 @@ public class DataInjectService {
             String aurl = "https";
             author=new Author();
             author.setAuthorname(a);
-            if(source.equalsIgnoreCase(Configuration.paperweekly_path)||source.equalsIgnoreCase(Configuration.zhihu_path)){
+            if(source.equalsIgnoreCase(Configuration.paperweekly_path)||source.equalsIgnoreCase(Configuration.zhihu_path)
+                    ||source.equalsIgnoreCase(Configuration.nips_path)){
                 author.setUrl(aurl);
             }
             authors.add(author);
@@ -459,7 +463,7 @@ public class DataInjectService {
                 authorDao.insertSelective(author);
                 authorId=authorDao.selectAidByAuthorName(author.getAuthorname());
             }
-                authorIdList.add(authorId);
+            authorIdList.add(authorId);
         }
         return authorIdList;
     }
