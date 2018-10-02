@@ -115,8 +115,18 @@ public class DataInjectService {
                         LogUtils.info("无数据", DataInjectService.class);
                         break;
                     }
-                    for (File f : list)
-                        DataInjectByFile__pwzhdblp(source,f);
+//                    Integer i = 0;
+                    for (File f : list){
+//                        i = i+1;
+//                        if(i <= 937) continue;
+                        try{
+                            DataInjectByFile__pwzhdblp(source,f);
+                        }catch (Exception e){
+                            LogUtils.info("插入"+f.toString()+"失败", DataInjectService.class);
+                        }
+
+                    }
+
 
                     LogUtils.info("导入 " + date+sourceName + " 数据", DataInjectService.class);
 
@@ -177,7 +187,7 @@ public class DataInjectService {
         }
 //        dataInject_init_pwzhdblp(Configuration.zhihu_path,Configuration.paperweekly_path);
 //        将pw_zh数据导入
-        dataInject_init_pwzhdblp(Configuration.paperweekly_path, Configuration.zhihu_path);
+        dataInject_init_pwzhdblp(Configuration.paperweekly_path, Configuration.zhihu_path, Configuration.nips_path);
 
     }
 

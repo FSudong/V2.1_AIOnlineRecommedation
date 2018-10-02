@@ -148,11 +148,17 @@ public class CBKNNModel {
                         break;
                     }
                     double sim = ReccommendUtils.cosinSimilarity(his.getValue(),vec);
-                    everySim = everySim + weight.get(his.getKey())* sim;
+
+                    if(!Double.isNaN(sim)){
+                        everySim = everySim + weight.get(his.getKey())* sim;
+                    }
+
                     count++;
                 }
                 if(!readed){
-                    everySim=everySim / count;
+                    if(count!=0){
+                        everySim=everySim / count;
+                    }
                     System.out.println("论文相似度："+everySim+" "+count+" "+user.getUname()+" "+paper.getTitle());
                     PaperSim paperSim = new PaperSim(pid, everySim);
                     if(maxKPaper.size() < user.getPushnum()){
@@ -167,10 +173,12 @@ public class CBKNNModel {
                 }
 
             }
-        }else{
+        }
+        else{
             for(Paper paper : papers){
                 int s = random.nextInt(5)%(5-1+1) + 1;
                 PaperSim paperSim = new PaperSim(paper.getId(), s);
+
                 maxKPaper.add(paperSim);
             }
         }
@@ -239,6 +247,7 @@ public class CBKNNModel {
 
             //利用用户的标签粗选出一些文章
             if(userTags!=null&& userTags.size()!=0 && thisUserTagList !=null && thisUserTagList.size()!=0 ){
+                //候选论文中 添加每个用户标签 ES搜索的前10篇文章
                 candidatePapers.addAll(coarseRankLess(userTags.get(user.getId())));
             }
             //使用并查集选取新论文papers中在同一大分类下的论文
@@ -278,6 +287,7 @@ public class CBKNNModel {
                 for(Paper paper:papers){
                     List<String> pheadtags = papersHeadTags.get(paper.getId());
                     if(pheadtags!=null && pheadtags.size()>0){
+                        //若该paper有标签则 保存与用户有相同顶级标签的 文章
                         for(String pht:pheadtags){
                             if(thisUserHeadTagnameList.contains(pht)){
                                 candidatePapers.add(paper);
@@ -285,12 +295,13 @@ public class CBKNNModel {
                             }
                         }
                     }else {
+                        //若该paper无标签 不妨先加入候选集
                         candidatePapers.add(paper);
                     }
                 }
             }
-            //10为retrive中的limit的值
-            if(candidatePapers.size()<= thisUserHeadTagList.size()*10){
+            //10为retrive中的limit的值 需要一致.若根本没有把今日的新论文加入到候选集中，则全部加入
+            if(candidatePapers.size()<= thisUserHeadTagList.size()*5){
                 candidatePapers.addAll(papers);
             }
             // get the k
