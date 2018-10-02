@@ -109,7 +109,7 @@ charset=UTF-8"
               </label>
               <label>
                   <input name="00090"  type="checkbox" value="true">
-                  <span class="fa fa-check"></span>语言识别
+                  <span class="fa fa-check"></span>语音识别
               </label>
               <label>
                   <input name="00100"  type="checkbox" value="true">

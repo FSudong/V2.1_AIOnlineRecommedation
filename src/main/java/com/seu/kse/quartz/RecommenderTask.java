@@ -70,7 +70,7 @@ public class RecommenderTask {
             User user = userDao.selectByEmail(email);
 
             if(Constant.isTest){
-                if(!(user.getUname().equals("yaosheng"))){
+                if(!(user.getUname().equals("fsd"))){
                     continue;
                 }
             }
@@ -92,6 +92,8 @@ public class RecommenderTask {
                 String paperURL = Constant.paperinfoURL + paperID;
                 paperURLs.add(paperURL);
                 paperTitles.add(paperTitle);
+                //
+                //System.out.println(email+"将收到论文"+paperTitles +"  similarity"+ String.valueOf(val.get(i).getSim()));
                 //更新user_paper 表
                 UserPaperBehavior upb = new UserPaperBehavior();
                 upb.setUid(user.getId());
