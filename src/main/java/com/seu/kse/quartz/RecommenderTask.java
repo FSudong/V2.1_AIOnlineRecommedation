@@ -17,9 +17,7 @@ import com.seu.kse.util.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class RecommenderTask {
@@ -68,7 +66,10 @@ public class RecommenderTask {
         for(Map.Entry<String,List<PaperSim>> e : RecommenderCache.userRecommend.entrySet()){
             String email = e.getKey();
             User user = userDao.selectByEmail(email);
-
+            //此处判断是否今日为该用户推荐
+            if(!TodayRecommendUser(user)){
+                continue;
+            }
             if(Constant.isTest){
                 if(!(user.getUname().equals("fsd"))){
                     continue;
@@ -107,6 +108,31 @@ public class RecommenderTask {
         }
         LogUtils.info("recommend end !",RecommendationService.class);
     }
+
+    /*
+    选出今天需要进行推荐的用户
+     */
+    private Boolean TodayRecommendUser(User user){
+
+        //查看今天是周几 1~7 表示周日至周六
+        Date today = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(today);
+        int weekday = c.get(Calendar.DAY_OF_WEEK);
+
+        Integer mailfrequency = user.getMailfrequency();
+        if(mailfrequency==1){//每天都发送
+            return true;
+        }else if(mailfrequency==2&&(weekday==2||weekday==4||weekday==6)){//每周三次 一、三、五
+            return true;
+        }else if(mailfrequency==3&&(weekday==2||weekday==6)){//每周两次 一、五
+            return true;
+        }else if(mailfrequency==4&&weekday==2){//每周一次 一
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * 更新userPaper表

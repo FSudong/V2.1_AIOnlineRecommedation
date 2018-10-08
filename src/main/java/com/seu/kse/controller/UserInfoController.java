@@ -157,6 +157,7 @@ public class UserInfoController {
         int utype = Integer.parseInt(request.getParameter("usertype"));
         String url = request.getParameter("userurl");
         int pushNum = Integer.parseInt(request.getParameter("userpushnum"));
+        int mailfrequency = Integer.parseInt(request.getParameter("usermailfrequency"));
         User oldUser = userService.getUserByID(uid);
         if(oldUser!=null){
             user.setUname(uname);
@@ -166,6 +167,7 @@ public class UserInfoController {
             user.setMailbox(oldUser.getMailbox());
             user.setUpassword(oldUser.getUpassword());
             user.setPushnum(pushNum);
+            user.setMailfrequency(mailfrequency);
             int line = userService.updateUser(user);
             if(line>0){
                //更新Session

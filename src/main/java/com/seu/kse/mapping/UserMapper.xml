@@ -11,7 +11,7 @@
     <result column="pushnum" property="pushnum" jdbcType="INTEGER"/>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, uname, upassword, mailbox, utype, url, pushnum
+    id, uname, upassword, mailbox, utype, url, pushnum, mailfrequency
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
@@ -51,9 +51,9 @@
   </delete>
   <insert id="insert" parameterType="com.seu.kse.bean.User" >
     insert into user (id, uname, upassword, 
-      mailbox, utype,url ,pushnum)
+      mailbox, utype,url ,pushnum, mailfrequency)
     values (#{id,jdbcType=VARCHAR}, #{uname,jdbcType=VARCHAR}, #{upassword,jdbcType=VARCHAR}, 
-      #{mailbox,jdbcType=VARCHAR}, #{utype,jdbcType=INTEGER},#{url,jdbcType=VARCHAR},#{pushnum,jdbcType=INTEGER})
+      #{mailbox,jdbcType=VARCHAR}, #{utype,jdbcType=INTEGER},#{url,jdbcType=VARCHAR},#{pushnum,jdbcType=INTEGER},#{mailfrequency,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.seu.kse.bean.User" >
     insert into user
@@ -79,6 +79,9 @@
       <if test="pushnum != null" >
         pushnum,
       </if>
+      <if test="mailfrequency != null" >
+        mailfrequency,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -101,6 +104,9 @@
       </if>
       <if test="pushnum != null" >
         #{pushnum,jdbcType=INTEGER},
+      </if>
+      <if test="mailfrequency != null" >
+        #{mailfrequency,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -125,6 +131,9 @@
       <if test="pushnum != null" >
         pushnum = #{pushnum,jdbcType=INTEGER},
       </if>
+      <if test="mailfrequency != null" >
+        pushnum = #{mailfrequency,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -135,7 +144,8 @@
       mailbox = #{mailbox,jdbcType=VARCHAR},
       utype = #{utype,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
-      pushnum = #{pushnum,jdbcType=INTEGER}
+      pushnum = #{pushnum,jdbcType=INTEGER},
+      mailfrequency = #{mailfrequency,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -159,6 +159,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-2 control-label">邮箱推送频率</label>
+                        <div class="col-lg-10">
+                            <select name="usermailfrequency" class="form-control">
+                                <option value="1"${LOGIN_USER.mailfrequency==1?"selected='selected'":""}>每天</option>
+                                <option value="2"${LOGIN_USER.mailfrequency==2?"selected='selected'":""}>每周3次（一，三，五）</option>
+                                <option value="3"${LOGIN_USER.mailfrequency==3?"selected='selected'":""}>每周2次（一，五）</option>
+                                <option value="4"${LOGIN_USER.mailfrequency==4?"selected='selected'":""}>每周1次（一）</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <button style="float:right" type="submit" class="btn-save btn btn-sm btn-primary">修改个人信息</button>
                     </div>
                 </form>

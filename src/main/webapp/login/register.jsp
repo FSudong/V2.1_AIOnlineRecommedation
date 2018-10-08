@@ -65,6 +65,15 @@ charset=UTF-8"
                 <input id="pushnum" name="pushnum" type="text" placeholder="5" class="form-control" value="5">
             </div>
             <div class="form-group">
+                <label>邮箱推送论文频率</label>
+                <select name="mailfrequency" class="form-control">
+                    <option value="1">每天</option>
+                    <option value="2">每周3次（一，三，五）</option>
+                    <option value="3">每周2次（一，五）</option>
+                    <option value="4">每周1次（一）</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>用户身份</label>
                 <select name="utype" class="form-control">
                     <option value="1">本科生</option>
