@@ -5,7 +5,8 @@ public class Constant {
     public static final String CURRENT_USER = "LOGIN_USER";
     public static final String COOKIE_USER_ID="COOKIE_USER_ID";
     public static final String COOKIE_USER_PSW="COOKIE_USER_PSW";
-    public static String sender = "sudong2fish@qq.com";
+    public static String sender = "sudong2fish@qq.com";//密码kse2017,.
+//    public static String sender = "2144914348@qq.com";//密码kse2017,.
     public static String emailhost = "smtp.qq.com";
     public static String paperinfoURL = "http://"+URL+":8090/AIOnlineRecommendation/paperinfo?id=";
     public static String ES_INDEX = "reasearch_kg";

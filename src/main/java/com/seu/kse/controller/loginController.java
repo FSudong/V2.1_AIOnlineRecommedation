@@ -96,12 +96,13 @@ public class loginController {
         String email=request.getParameter("email");
         int utype=Integer.parseInt(request.getParameter("utype"));
         int pushNum = Integer.parseInt(request.getParameter("pushnum"));
+        int mailfrequency = Integer.parseInt(request.getParameter("mailfrequency"));
         //判断email是否已经注册
         if(userService.isRegisterEmail(email)){
             model.addAttribute("result","邮箱已经注册，请更换邮箱重试");
             return "/login/register";
         }else{
-            User user=new User(uname,upsw,email,utype,pushNum);
+            User user=new User(uname,upsw,email,utype,pushNum,mailfrequency);
             int lines = userService.insertUser(user);
             if(lines<=0){
                 model.addAttribute("result","数据库注册失败，请联系管理员");

@@ -300,7 +300,7 @@ public class CBKNNModel {
                     }
                 }
             }
-            //10为retrive中的limit的值 需要一致.若根本没有把今日的新论文加入到候选集中，则全部加入
+            //5为retrive中的limit的值 需要一致.若根本没有把今日的新论文加入到候选集中，则全部加入
             if(candidatePapers.size()<= thisUserHeadTagList.size()*5){
                 candidatePapers.addAll(papers);
             }

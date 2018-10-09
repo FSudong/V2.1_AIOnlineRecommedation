@@ -7,10 +7,7 @@ import com.seu.kse.util.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by yaosheng on 2017/5/31.
@@ -81,6 +78,7 @@ public class RecommendationService {
         System.out.println(papers.size());
         List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,5,10);
         List<User> users = userDao.getAllUser();
+//        List<User> users = selectTodayRecommendUsers();
         Map<String,List<UserPaperBehavior>> userPaperBehaviors = new HashMap<String, List<UserPaperBehavior>>();
         Map<String, List<UserTagKey>> usersTag = new HashMap<String, List<UserTagKey>>();
         Map<String, List<UserTagKey>> usersHeadTag = new HashMap<String, List<UserTagKey>>();
