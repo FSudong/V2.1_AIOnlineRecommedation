@@ -325,7 +325,7 @@ public class DataInjectService {
             paper.setType(2);
         }else if(source.equalsIgnoreCase(Configuration.nips_path)){
 
-            paper.setType(0);
+            paper.setType(4);
         }
 
 
@@ -413,31 +413,49 @@ public class DataInjectService {
         }
         if(temp == null&& temp2==null){
             int line =  paperDao.insert(p);
-            LogUtils.info("insert paper1 "+p.getId()+"信息",DataInjectService.class);
+            LogUtils.info("insert paper1 normal "+p.getId()+"信息",DataInjectService.class);
             return line;
         }
         else if(temp!=null && temp2==null){
-//            待改进
-            paperDao.updateByPrimaryKey(p);
-            LogUtils.info("更新paper2 "+p.getId()+"信息",DataInjectService.class);
-
-        }else if(temp==null&&temp2!=null){
-//            temp2.setId(p.getId());
-            paperDao.deleteByPrimaryKey(temp2.getId());
+//            已改进 ：id重复了但 title不重复   方法：更改现在文章的id直接插入，插入失败就算了
+            String newId = p.getId()+"dup";
+            newId = newId.length()>60?newId.substring(newId.length()-59,newId.length()):newId;
+            p.setId(newId);
             int line = paperDao.insert(p);
-            LogUtils.info("insert paper3 "+p.getId()+"信息",DataInjectService.class);
+            LogUtils.info("insert paper2 dupId "+p.getId()+"信息",DataInjectService.class);
+            return line;
+        }else if(temp==null&&temp2!=null){
+//             已改进：title 重复 id不重复 则id等保持不变，只变动source和type
+            if(p.getType()>temp2.getType()){
+                temp2.setType(p.getType());
+                temp2.setPublisher(p.getPublisher());
+            }
+            temp2.setTime(p.getTime());
+            int line = paperDao.updateByPrimaryKeySelective(temp2);
+            LogUtils.info("update paper3 duptitle "+temp2.getId()+"信息",DataInjectService.class);
             return line;
         }else if(temp!=null&&temp2!=null){
             if(temp.getId().equals(temp2.getId())){
-                paperDao.updateByPrimaryKey(p);
-                LogUtils.info("更新paper4 "+p.getId()+"信息",DataInjectService.class);
+                //已改进：只更新type 和 source
+                if(p.getType()>temp2.getType()){
+                    temp2.setType(p.getType());
+                    temp2.setPublisher(p.getPublisher());
+                }
+                temp2.setTime(p.getTime());
+                int line = paperDao.updateByPrimaryKeySelective(temp2);
+                LogUtils.info("update paper4 duptitleIdsame "+temp2.getId()+"信息",DataInjectService.class);
+                return line;
 
             }else{
-//                待改进
-//                p.setId(temp2.getId());
-                paperDao.deleteByPrimaryKey(temp2.getId());
-                paperDao.updateByPrimaryKey(p);
-                LogUtils.info("更新paper5 "+p.getId()+"信息",DataInjectService.class);
+//                已改进:id重复的不动 题目重复的更新type和source
+                if(p.getType()>temp2.getType()){
+                    temp2.setType(p.getType());
+                    temp2.setPublisher(p.getPublisher());
+                }
+                temp2.setTime(p.getTime());
+                int line = paperDao.updateByPrimaryKeySelective(temp2);
+                LogUtils.info("update paper5 duptitleIddiff"+temp2.getId()+"信息",DataInjectService.class);
+                return line;
             }
         }
         return 0;
