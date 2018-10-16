@@ -76,6 +76,7 @@ public class CBKNNModel {
         return res;
     }
 
+
     public void thingColdStart(){
         //1. 获取每日新产生的论文
         //2. 计算新产生论文和用户
@@ -86,8 +87,11 @@ public class CBKNNModel {
         HashMap<String, double[]>  history = new HashMap<String, double[]>();
         HashMap<String, Integer> weight = new HashMap<String, Integer>();
         List<PaperSim> ranks = new ArrayList<PaperSim>();
-        Queue<PaperSim> maxKPaper = new PriorityQueue<PaperSim>(user.getPushnum());
-//        获取用户所有读过的文章id
+        System.out.println("用户："+user.getUname());
+//        Queue<PaperSim> maxKPaper = new PriorityQueue<PaperSim>(user.getPushnum());
+        Queue<PaperSim> maxKPaperArxiv = new PriorityQueue<PaperSim>(user.getPushnum() - user.getPushnum()/2);
+        Queue<PaperSim> maxKPaperElse = new PriorityQueue<PaperSim>(user.getPushnum()/2);
+        //获取用户所有读过的文章id
         List<String> userPaperIds = new ArrayList<String>();
         for(UserPaperBehavior upb:user_paper_behaves){
             userPaperIds.add(upb.getPid());
@@ -100,7 +104,7 @@ public class CBKNNModel {
                 int score = up.getInterest();
                 String pid = up.getPid();
                 double[] vec = RecommenderCache.paperVecs.get(pid);
-//                注意为了降低计算复杂度 只将用户有评分和本身就存在向量的 文章转化为向量history中只存了这些文章
+                //注意为了降低计算复杂度 只将用户有评分和本身就存在向量的 文章转化为向量history中只存了这些文章
                 if(vec!=null){
                     history.put(pid, vec);
                     weight.put(pid, score);
@@ -161,15 +165,17 @@ public class CBKNNModel {
                     }
                     System.out.println("论文相似度："+everySim+" "+count+" "+user.getUname()+" "+paper.getTitle());
                     PaperSim paperSim = new PaperSim(pid, everySim);
-                    if(maxKPaper.size() < user.getPushnum()){
-                        maxKPaper.add(paperSim);
-                    }else{
-                        PaperSim lowest = maxKPaper.peek();
-                        if(paperSim.compareTo(lowest)>0){
-                            maxKPaper.poll();
-                            maxKPaper.add(paperSim);
-                        }
-                    }
+//                    if(maxKPaper.size() < user.getPushnum()){
+//                        maxKPaper.add(paperSim);
+//                    }else{
+//                        PaperSim lowest = maxKPaper.peek();
+//                        if(paperSim.compareTo(lowest)>0){
+//                            maxKPaper.poll();
+//                            maxKPaper.add(paperSim);
+//                        }
+//                    }
+                    insertPaperBySource(paper,paperSim,maxKPaperArxiv,maxKPaperElse,user.getPushnum());
+//                    System.out.println("");
                 }
 
             }
@@ -178,12 +184,38 @@ public class CBKNNModel {
             for(Paper paper : papers){
                 int s = random.nextInt(5)%(5-1+1) + 1;
                 PaperSim paperSim = new PaperSim(paper.getId(), s);
+//                maxKPaper.add(paperSim);
+                insertPaperBySource(paper,paperSim,maxKPaperArxiv,maxKPaperElse,user.getPushnum());
+//                System.out.println("");
+            }
+        }
+//        ranks.addAll(maxKPaper);
+        ranks.addAll(maxKPaperArxiv);
+        ranks.addAll(maxKPaperElse);
+        RecommenderCache.userRecommend.put(user.getMailbox(),ranks);
+    }
 
+    public  void insertPaperBySource(Paper paper,PaperSim paperSim,Queue<PaperSim> maxKPaperArxiv,Queue<PaperSim> maxKPaperElse,Integer pushnum){
+        String publisher = paper.getPublisher();
+        Queue<PaperSim> maxKPaper;
+        Integer maxNum;
+        if (publisher.equalsIgnoreCase("Arxiv")){
+            maxKPaper = maxKPaperArxiv;
+            maxNum = pushnum - pushnum/2;
+        }else {
+            maxKPaper = maxKPaperElse;
+            maxNum = pushnum/2;
+        }
+
+        if(maxKPaper.size() < maxNum){
+            maxKPaper.add(paperSim);
+        }else{
+            PaperSim lowest = maxKPaper.peek();
+            if(paperSim.compareTo(lowest)>0){
+                maxKPaper.poll();
                 maxKPaper.add(paperSim);
             }
         }
-        ranks.addAll(maxKPaper);
-        RecommenderCache.userRecommend.put(user.getMailbox(),ranks);
     }
 
 

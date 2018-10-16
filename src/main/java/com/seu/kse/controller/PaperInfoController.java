@@ -99,8 +99,31 @@ public class PaperInfoController {
        /* if(!Utils.testConnect()){
             return "/index";
         }*/
-
         String id = request.getParameter("id");
+
+        //此处可以添加 判别用户是否登录
+        User login_user = Utils.testLogin(session,model);
+        if (id!=null && !id.equals("") && login_user!=null && !login_user.getId().equals("")) {
+            //存在登陆的用户 该用户点击查看了论文 且未进行过评分 则设置默认评分为3（一般）
+            UserPaperBehaviorKey upbKey = new UserPaperBehaviorKey();
+            upbKey.setPid(id);
+            upbKey.setUid(login_user.getId());//还要加是否有这个用户
+            UserPaperBehavior upb = userPaperService.selectByKey(upbKey);
+            if(upb==null || (upb!=null && upb.getInterest()==0)){
+                //当用户未操作过这篇文章，或者未设置感兴趣度，则设为默认值3
+                UserPaperBehavior record = new UserPaperBehavior();
+                record=new UserPaperBehavior();
+                record.setPid(id);
+                record.setUid(login_user.getId());
+                Byte yes =1;
+                Byte no = 0;
+                record.setAuthor(no);
+                record.setInterest(3);
+                record.setReaded(yes);
+                userPaperService.insertObject(record);
+            }
+        }
+
         Paper paper = paperService.searchPaper(id);
         //System.out.println("URL: "+paper.getUrl());
         paper.setId(id);
