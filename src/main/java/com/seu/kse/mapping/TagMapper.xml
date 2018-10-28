@@ -5,6 +5,7 @@
     <id column="tagName" jdbcType="VARCHAR" property="tagname" />
     <result column="level" jdbcType="INTEGER" property="level" />
     <result column="fatherName" jdbcType="VARCHAR" property="fathername" />
+    <result column="topAncestor" jdbcType="VARCHAR" property="topancestor" />
     <result column="time" jdbcType="DATE" property="time" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -66,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    tagName, level, fatherName, time
+    tagName, level, fatherName, time, topAncestor
   </sql>
   <select id="selectByExample" parameterType="com.seu.kse.bean.TagExample" resultMap="BaseResultMap">
     select
@@ -93,6 +94,13 @@
   <select id="selectByTagName"  resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     *
+     FROM
+    tag where tagName = #{tagname, jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectTopAncestorByTagName" resultType="java.lang.String" parameterType="java.lang.String" >
+    select
+    topAncestor
      FROM
     tag where tagName = #{tagname, jdbcType=VARCHAR}
   </select>
@@ -207,6 +215,9 @@
       </if>
       <if test="time != null">
         time = #{time,jdbcType=DATE},
+      </if>
+      <if test="topancestor != null">
+        topAncestor = #{topancestor,jdbcType=VARCHAR},
       </if>
     </set>
     where tagName = #{tagname,jdbcType=VARCHAR}

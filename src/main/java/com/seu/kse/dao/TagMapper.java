@@ -28,8 +28,9 @@ public interface TagMapper {
     int updateByPrimaryKeySelective(Tag record);
 
     int updateByPrimaryKey(Tag record);
-//人工添加
+    //人工添加
     Tag selectByTagName(String tagname);
+    String selectTopAncestorByTagName(String tagname);
 
     List<Tag> selectAllTag();
 

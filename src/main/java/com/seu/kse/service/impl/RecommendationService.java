@@ -3,6 +3,7 @@ package com.seu.kse.service.impl;
 import com.seu.kse.bean.*;
 import com.seu.kse.dao.*;
 import com.seu.kse.service.recommender.model.CB.CBKNNModel;
+import com.seu.kse.util.Configuration;
 import com.seu.kse.util.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,9 +45,9 @@ public class RecommendationService {
 //            原版本使用了Arixv中的前100篇文章
 //            List<Paper> papers = paperDao.selectLimitArxiv(100);
 //            新系统使用了zh pw arxiv 最新的文章
-            List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,100,10);
+            List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,5000,10);
             LogUtils.info("read new paper",RecommendationService.class);
-            List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,5,10);
+            List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,100,10);
             LogUtils.info("read user",RecommendationService.class);
             List<User> users = userDao.getAllUser();
             LogUtils.info("user actions",RecommendationService.class);
@@ -60,8 +61,11 @@ public class RecommendationService {
             Map<String, List<UserTagKey>> usersHeadTag = new HashMap<String, List<UserTagKey>>();
             setUserInformation(userPaperBehaviors, usersTag, usersHeadTag, users);
             //List<Paper> allPapers = paperDao.selectAllPaper();
+            //更新tag表的始祖
+//            cbknnModel.updateALLTopAncestor();
+//            System.out.println("end");
             //训练模型
-            cbknnModel.init(true,papers,papers,1);
+            cbknnModel.init(true,papers,papers, Configuration.useModelType);
             cbknnModel.model(papers,userPaperBehaviors,users,newPapers,usersTag,usersHeadTag);
             LogUtils.info("init complete",RecommendationService.class);
 
@@ -74,9 +78,9 @@ public class RecommendationService {
         LogUtils.info("model update init!",RecommendationService.class);
         //20180826 backup writted by yaosheng
 //        List<Paper> papers = paperDao.selectLimitArxiv(8000);
-        List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,500,10);
+        List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,5000,10);
         System.out.println(papers.size());
-        List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,5,10);
+        List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,100,10);
         List<User> users = userDao.getAllUser();
 //        List<User> users = selectTodayRecommendUsers();
         Map<String,List<UserPaperBehavior>> userPaperBehaviors = new HashMap<String, List<UserPaperBehavior>>();
@@ -86,7 +90,7 @@ public class RecommendationService {
 
         //List<Paper> allPapers = paperDao.selectAllPaper();
         //训练模型
-        cbknnModel.init(true,papers,papers,1);
+        cbknnModel.init(true,papers,papers,Configuration.useModelType);
         cbknnModel.model(papers,userPaperBehaviors,users,newPapers,usersTag,usersHeadTag);
         LogUtils.info("model update complete !",RecommendationService.class);
     }
@@ -109,7 +113,7 @@ public class RecommendationService {
                     tagNameStrings.add(string);
                 }
 //                获取顶级标签
-                String headTag = getHeadFatherTag(userTagKey.getTagname());
+                String headTag = getHeadFatherTagByTree(userTagKey.getTagname());
                 if(!headTagNames.contains(headTag)){
                     headTagNames.add(headTag);
                 }
@@ -143,12 +147,12 @@ public class RecommendationService {
         return strings;
     }
 
-    public String getHeadFatherTag(String tagName){
+    public String getHeadFatherTagByTree(String tagName){
         Tag tag = tagDao.selectByTagName(tagName);
         if(tag.getFathername().equals("head")){
             return tag.getTagname();
         }
-        return getHeadFatherTag(tag.getFathername());
+        return getHeadFatherTagByTree(tag.getFathername());
     }
 
 
