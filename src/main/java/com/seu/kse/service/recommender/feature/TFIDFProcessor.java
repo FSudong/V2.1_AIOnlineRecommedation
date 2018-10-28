@@ -43,7 +43,7 @@ public class TFIDFProcessor {
     }
     public static void process(List<Paper> paperList,List<Paper> AllPaper){
         String path = TFIDFProcessor.class.getClassLoader().getResource("/").getPath()+Configuration.documents;
-
+//        System.out.println("path: "+path);
 
         LogUtils.info(path,TFIDFProcessor.class);
         try {

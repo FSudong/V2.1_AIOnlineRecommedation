@@ -11,6 +11,8 @@ public class Tag {
 
     private Date time;
 
+    private String topancestor;
+
     public String getTagname() {
         return tagname;
     }
@@ -33,6 +35,14 @@ public class Tag {
 
     public void setFathername(String fathername) {
         this.fathername = fathername == null ? null : fathername.trim();
+    }
+
+    public String getTopAncestor() {
+        return topancestor;
+    }
+
+    public void setTopAncestor(String topancestor) {
+        this.topancestor = topancestor == null ? null : topancestor.trim();
     }
 
     public Date getTime() {

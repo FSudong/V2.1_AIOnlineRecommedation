@@ -10,6 +10,7 @@ import com.seu.kse.service.recommender.feature.TFIDFProcessor;
 import com.seu.kse.service.recommender.feature.Word2vecProcessor;
 import com.seu.kse.service.recommender.model.PaperSim;
 import com.seu.kse.service.retrieval.Retrieval;
+import com.seu.kse.util.Configuration;
 import com.seu.kse.util.LogUtils;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+
 
 /**
  * Created by yaosheng on 2017/5/26.
@@ -30,17 +32,37 @@ public class CBKNNModel {
     @Resource
     private PaperTagMapper paperTagDao;
 
-    public String getHeadFatherTag(String tagName){
+
+    public void updateALLTopAncestor(){
+        //在数据库中添加顶级祖先
+        List<Tag> tagList = tagDao.selectAllTag();
+        int i  = 0;
+        for(Tag tag:tagList){
+            String topancestor = getHeadFatherTagByTree(tag.getTagname());
+            tag.setTopAncestor(topancestor);
+            tagDao.updateByPrimaryKeySelective(tag);
+            i = i+1;
+            System.out.println(i+" in "+tagList.size()+" : "+tag.getTagname()+"  topAncestor: "+tag.getTopAncestor());
+        }
+    }
+
+
+    public String getHeadFatherTagByTree(String tagName){
+//        System.out.println(tagName);
         Tag tag = tagDao.selectByTagName(tagName);
         if(tag ==null || tag.getFathername() == null || tag.getFathername().equalsIgnoreCase("")|| tag.getTagname().equalsIgnoreCase(tag.getFathername())){
             System.out.println("getheadfathertag:" + tag.getTagname()+"::"+tag.getFathername());
+            return null;
         }
         if(tag.getFathername().equals("head")){
             return tag.getTagname();
         }
-        return getHeadFatherTag(tag.getFathername());
+        return getHeadFatherTagByTree(tag.getFathername());
     }
 
+    public String getHeadFatherTagDirect(String tagName){
+        return  tagDao.selectTopAncestorByTagName(tagName);
+    }
 
     public void init(boolean open, List<Paper> trainPapers, List<Paper> allPapers, int type){
         RecommenderCache.similarPaperList = new HashMap<String, List<PaperSim>>();
@@ -114,7 +136,12 @@ public class CBKNNModel {
                     String abs = paper.getPaperAbstract();
                     String title = paper.getTitle();
                     String content = abs +" "+title;
-                    INDArray cur_vec = RecommenderCache.TFIDF.transform(content);
+                    INDArray cur_vec = null;
+                    if(Configuration.useModelType == 0){
+                        cur_vec = Word2vecProcessor.calNewPaperVec(paper);
+                    }else if (Configuration.useModelType == 1){
+                        cur_vec = RecommenderCache.TFIDF.transform(content);
+                    }
                     double [] vectors = new double[cur_vec.length()];
                     for(int k = 0 ; k<cur_vec.length(); k++){
                         vectors[k] = cur_vec.getDouble(k);
@@ -136,7 +163,12 @@ public class CBKNNModel {
                     String abs = paperExistInMysql.getPaperAbstract();
                     String title = paperExistInMysql.getTitle();
                     String content = abs + " " + title;
-                    INDArray cur_vec = RecommenderCache.TFIDF.transform(content);
+                    INDArray cur_vec = null;
+                    if(Configuration.useModelType == 0){
+                        cur_vec = Word2vecProcessor.calNewPaperVec(paper);
+                    }else if (Configuration.useModelType == 1){
+                        cur_vec = RecommenderCache.TFIDF.transform(content);
+                    }
                     vec = new double[cur_vec.length()];
                     for(int k = 0 ; k<cur_vec.length(); k++){
                         vec[k] = cur_vec.getDouble(k);
@@ -258,8 +290,10 @@ public class CBKNNModel {
             List<PaperTagKey> paperTagKeys = paperTagDao.selectByPID(paper.getId());
             List<String> paperHeadTags = new ArrayList<String>();
             for(PaperTagKey ptk:paperTagKeys){
-                String paperHeadTag = getHeadFatherTag(ptk.getTagname());
-                if(!paperHeadTags.contains(paperHeadTag)){
+//                String paperHeadTag = getHeadFatherTagByTree(ptk.getTagname());
+                String paperHeadTag = getHeadFatherTagDirect(ptk.getTagname());
+//                System.out.println(ptk.getTagname()+"::"+paperHeadTag);
+                if(paperHeadTag!=null && !paperHeadTag.equals("") &&  !paperHeadTags.contains(paperHeadTag)){
                     paperHeadTags.add(paperHeadTag);
                 }
             }
@@ -333,7 +367,7 @@ public class CBKNNModel {
                 }
             }
             //5为retrive中的limit的值 需要一致.若根本没有把今日的新论文加入到候选集中，则全部加入
-            if(candidatePapers.size()<= thisUserHeadTagList.size()*5){
+            if(candidatePapers.size()<= thisUserHeadTagList.size()* Configuration.retriverlessBytag){
                 candidatePapers.addAll(papers);
             }
             // get the k

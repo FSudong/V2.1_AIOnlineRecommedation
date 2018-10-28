@@ -2,6 +2,7 @@ package com.seu.kse.service.retrieval;
 
 import com.seu.kse.bean.Paper;
 import com.seu.kse.quartz.RecommenderTask;
+import com.seu.kse.util.Configuration;
 import com.seu.kse.util.Constant;
 import com.seu.kse.util.LogUtils;
 import org.elasticsearch.action.search.SearchResponse;
@@ -33,7 +34,7 @@ public class Retrieval {
     }
 
     public static List<Paper> retrievalless(String tag){
-        SearchHits hits = search(tag, 0.9f, 5);
+        SearchHits hits = search(tag, 0.9f, Configuration.retriverlessBytag);
         return getPapers(hits);
     }
 

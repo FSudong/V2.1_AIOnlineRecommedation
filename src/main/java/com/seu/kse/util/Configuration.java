@@ -5,12 +5,14 @@ package com.seu.kse.util;
  */
 public class Configuration {
     //public static String projectRoot= "E:/Java/IDEAWorkSpace/AIOnlineRecommedation/src/main";
+    public static Integer useModelType = 0;
     public static String sentencesFile="sentences.txt";
     public static String modelFile="word2vecmodel";
     public static int dimensions=100;
     public static String Paper_Model_Path="paper2vecmodel";
     public static String stopWords="stop-word-list.txt";
     public static String paper_vec="papervec";
+    public static int retriverlessBytag = 50;
 //
 //    public static String arxiv_path ="E:\\data\\arxiv\\paperPro";
 //    public static String zhihu_path ="E:\\data\\zh\\paperPro";

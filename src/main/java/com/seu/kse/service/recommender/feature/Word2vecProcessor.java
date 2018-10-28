@@ -29,10 +29,12 @@ import java.util.*;
 
 
 public class Word2vecProcessor {
-    private static ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    private static String filepath = classloader.getResource(Configuration.sentencesFile).getPath();
+//    private static ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+//    private static String filepath = classloader.getResource(Configuration.sentencesFile).getPath();
     //private static Logger log = LoggerFactory.getLogger(Word2vecProcessor.class);
     public static void modelByWord2vce(){
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        String filepath = classloader.getResource(Configuration.sentencesFile).getPath();
         try {
             Word2Vec vec;
             SentenceIterator iter = new BasicLineIterator(filepath);
@@ -126,7 +128,7 @@ public class Word2vecProcessor {
                 for(int i=0;i<words1.length;i++){
                     words[i] = words1[i];
                 }for(int i=0;i<words2.length;i++){
-                    words[i] = words2[i];
+                    words[i+words1.length] = words2[i];
                 }
                 //根据 words 计算 paper向量
                 double[] docVec = w2d.calDocVec(words);
@@ -147,6 +149,31 @@ public class Word2vecProcessor {
         LogUtils.info("loading paper2vec model complete",Word2vecProcessor.class);
 
     }
+
+
+    public static INDArray calNewPaperVec(Paper paper){
+
+
+        //获得每一篇论文的词表,按空格分词
+        Word2DocByAve w2d = new Word2DocByAve();
+
+        String title = paper.getTitle();
+        String paperAbstract = paper.getPaperAbstract();
+        String[] words1 = ReccommendUtils.segmentation(title);
+        String[] words2 = ReccommendUtils.segmentation(paperAbstract);
+        int len = words1.length + words2.length;
+        String[] words = new String[len];
+        for(int i=0;i<words1.length;i++){
+            words[i] = words1[i];
+        }for(int i=0;i<words2.length;i++){
+            words[i+words1.length] = words2[i];
+        }
+        //根据 words 计算 paper向量
+        INDArray docVec = w2d.calMatrixVec(words);
+//        LogUtils.info("cal New paper Vec",Word2vecProcessor.class);
+        return docVec;
+    }
+
 
     /**
      * 训练获得所有论文的相似论文，并持久化
@@ -191,8 +218,11 @@ public class Word2vecProcessor {
         URL url_root = classloader.getResource("/");
         String filepath = url_root.getPath();
         PaperDocument.ToDocument(filepath+"/"+Configuration.sentencesFile,papers);
+        //训练模型
         Word2vecProcessor.modelByWord2vce();
+        //计算论文向量
         Word2vecProcessor.calPaperVec(papers);
+        //计算每个文章的 topk相似的论文
         Word2vecProcessor.trainSimPaper(papers);
     }
 
