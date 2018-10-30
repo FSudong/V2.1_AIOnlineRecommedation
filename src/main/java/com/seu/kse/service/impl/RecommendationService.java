@@ -45,7 +45,7 @@ public class RecommendationService {
 //            原版本使用了Arixv中的前100篇文章
 //            List<Paper> papers = paperDao.selectLimitArxiv(100);
 //            新系统使用了zh pw arxiv 最新的文章
-            List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,5000,10);
+            List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,3000,10);
             LogUtils.info("read new paper",RecommendationService.class);
             List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,100,10);
             LogUtils.info("read user",RecommendationService.class);
@@ -78,7 +78,7 @@ public class RecommendationService {
         LogUtils.info("model update init!",RecommendationService.class);
         //20180826 backup writted by yaosheng
 //        List<Paper> papers = paperDao.selectLimitArxiv(8000);
-        List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,5000,10);
+        List<Paper> papers = paperDao.selectPaperOrderByTimeSource(0,3000,10);
         System.out.println(papers.size());
         List<Paper> newPapers = paperDao.selectPaperOrderByTime(0,100,10);
         List<User> users = userDao.getAllUser();
