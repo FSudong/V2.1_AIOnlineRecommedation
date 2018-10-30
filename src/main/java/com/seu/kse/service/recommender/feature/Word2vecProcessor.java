@@ -73,6 +73,8 @@ public class Word2vecProcessor {
                 File file = new File(root_path+"/"+Configuration.modelFile);
                 file.createNewFile();
             }
+            url = Thread.currentThread().getContextClassLoader().getResource(Configuration.modelFile);
+
             WordVectorSerializer.writeWord2VecModel(vec, Thread.currentThread().getContextClassLoader().getResource(Configuration.modelFile).getPath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();

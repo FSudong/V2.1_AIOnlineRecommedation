@@ -5,6 +5,7 @@ import com.seu.kse.dao.PaperMapper;
 import com.seu.kse.service.recommender.ReccommendUtils;
 import com.seu.kse.service.recommender.RecommenderCache;
 import com.seu.kse.service.recommender.model.PaperSim;
+import com.seu.kse.util.Configuration;
 import com.seu.kse.util.Constant;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.springframework.stereotype.Service;
@@ -128,18 +129,27 @@ public class PaperService {
      * @return
      */
     public List<Paper> getSimPaper(String pid, int k){
-//        List<Paper> res = new ArrayList<Paper>();
-//        List<PaperSim> sims = new ArrayList<PaperSim>();
-//        if(RecommenderCache.similarPaperList != null && RecommenderCache.similarPaperList.size()!=0){
-//            sims = RecommenderCache.similarPaperList.get(pid);
-//        }
-//        if(sims!=null&&sims.size()!=0){
-//            int minSize = Math.min(k,sims.size());
-//            for(int i=0 ;i<minSize;i++){
-//                res.add(paperdao.selectByPrimaryKey(sims.get(i).getPid()));
-//            }
-//        }
+        //word2vec模型的相似文本
+        if(Configuration.useModelType==0){
+            List<Paper> res = new ArrayList<Paper>();
+            List<PaperSim> sims = new ArrayList<PaperSim>();
+            if(RecommenderCache.similarPaperList != null && RecommenderCache.similarPaperList.size()!=0){
+                sims = RecommenderCache.similarPaperList.get(pid);
+            }
+            if(sims == null || sims.size()==0){
+                //无记录的相似文本时，返回空（待改进）
+                res = null;
+            }
+            if(sims!=null&&sims.size()!=0){
+                int minSize = Math.min(k,sims.size());
+                for(int i=0 ;i<minSize;i++){
+                    res.add(paperdao.selectByPrimaryKey(sims.get(i).getPid()));
+                }
+            }
+            return res;
+        }
 
+        //TFIDF的相似文本
         return  calSimPaper(pid,k);
     }
 

@@ -168,14 +168,16 @@ public class PaperInfoController {
             tags.add(t.getTagname());
         }
         model.addAttribute("tags", tags);
-        Map<String, List<Author>> authorMap ;
+        Map<String, List<Author>> authorMap = null;
         List<Paper> papers;
         if (paper.getPublisher().contains("arxiv")){
             papers=paperService.getSimPaper(paper.getId(),10);
         }else{
             papers= paperService.getRefPaper(paper.getId());
         }
-        authorMap = authorService.getAuthorForPapers(papers);
+        if(papers!=null){
+            authorMap = authorService.getAuthorForPapers(papers);
+        }
         model.addAttribute("authorMap",authorMap);
         model.addAttribute("refPapers",papers);
         model.addAttribute("tag",0);
