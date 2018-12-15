@@ -46,6 +46,7 @@ public class ReccommendUtils {
         }
         simDiv2 = Math.sqrt(simDiv2);
         simDiv=simDiv1*simDiv2;
+        if(simDiv==0.0)return 0.0;
         sim = sim/simDiv;
         return sim;
     }
@@ -54,6 +55,10 @@ public class ReccommendUtils {
 
 
     public static String[] segmentation(String sentence){
+        if(sentence==null){
+            String[] words = {""};
+            return words;
+        }
         String[] words = sentence.split(" ");
         return words;
     }

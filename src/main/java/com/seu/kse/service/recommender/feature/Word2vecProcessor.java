@@ -152,6 +152,28 @@ public class Word2vecProcessor {
 
     }
 
+    public static double[] calNewPaperDoubleVec(Paper paper){
+
+
+        //获得每一篇论文的词表,按空格分词
+        Word2DocByAve w2d = new Word2DocByAve();
+
+        String title = paper.getTitle();
+        String paperAbstract = paper.getPaperAbstract();
+        String[] words1 = ReccommendUtils.segmentation(title);
+        String[] words2 = ReccommendUtils.segmentation(paperAbstract);
+        int len = words1.length + words2.length;
+        String[] words = new String[len];
+        for(int i=0;i<words1.length;i++){
+            words[i] = words1[i];
+        }
+        for(int i=0;i<words2.length;i++){
+            words[i+words1.length] = words2[i];
+        }
+        //根据 words 计算 paper向量
+        double[] docVec = w2d.calDocVec(words);
+        return docVec;
+    }
 
     public static INDArray calNewPaperVec(Paper paper){
 
