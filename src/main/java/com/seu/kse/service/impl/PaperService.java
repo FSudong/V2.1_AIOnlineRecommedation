@@ -4,6 +4,7 @@ import com.seu.kse.bean.Paper;
 import com.seu.kse.dao.PaperMapper;
 import com.seu.kse.service.recommender.ReccommendUtils;
 import com.seu.kse.service.recommender.RecommenderCache;
+import com.seu.kse.service.recommender.feature.Word2vecProcessor;
 import com.seu.kse.service.recommender.model.PaperSim;
 import com.seu.kse.util.Configuration;
 import com.seu.kse.util.Constant;
@@ -137,9 +138,38 @@ public class PaperService {
                 sims = RecommenderCache.similarPaperList.get(pid);
             }
             if(sims == null || sims.size()==0){
-                //无记录的相似文本时，返回空（待改进）
-                res = null;
+                sims = new ArrayList<PaperSim>();
+                //word2vec无记录该pid的相似文本时，需要计算
+                Paper paper = paperdao.selectByPrimaryKey(pid);
+                if(paper==null) return null;
+                double[] paperVec = Word2vecProcessor.calNewPaperDoubleVec(paper);
+                Queue<PaperSim> maxKPaper = new PriorityQueue<PaperSim>(Constant.SIM_NUM);
+                for(Map.Entry<String, double[]> e2 : RecommenderCache.paperVecs.entrySet()){
+                    if(pid.equals(e2.getKey())) continue;
+                    String pid2 = e2.getKey();
+                    double sim = ReccommendUtils.cosinSimilarity(paperVec,e2.getValue());
+                    PaperSim paperSim = new PaperSim(pid2, sim);
+                    //sims.add(paperSim);
+                    if(maxKPaper.size()<Constant.SIM_NUM){
+                        maxKPaper.add(paperSim);
+                    }else{
+                        PaperSim lowest = maxKPaper.peek();
+                        if(paperSim.compareTo(lowest)>0){
+                            maxKPaper.poll();
+                            maxKPaper.add(paperSim);
+                        }
+                    }
+                }
+                sims.addAll(maxKPaper);
+                Collections.reverse(sims);
+                RecommenderCache.similarPaperList.put(pid,sims);
+                int minSize = Math.min(k,sims.size());
+                for(int i=0 ;i<minSize;i++){
+                    res.add(paperdao.selectByPrimaryKey(sims.get(i).getPid()));
+                }
+                return res;
             }
+
             if(sims!=null&&sims.size()!=0){
                 int minSize = Math.min(k,sims.size());
                 for(int i=0 ;i<minSize;i++){
@@ -185,6 +215,7 @@ public class PaperService {
 
     public List<Paper> calSimPaper(String pid, int k){
         List<Paper> res = new ArrayList<Paper>();
+        //训练得模型中不存在这个文本
         if(RecommenderCache.paperIDMapRowID.get(pid)==null){
             return res;
         }

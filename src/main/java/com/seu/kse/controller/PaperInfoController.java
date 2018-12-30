@@ -173,7 +173,8 @@ public class PaperInfoController {
         if (paper.getPublisher().contains("arxiv")){
             papers=paperService.getSimPaper(paper.getId(),10);
         }else{
-            papers= paperService.getRefPaper(paper.getId());
+//            papers= paperService.getRefPaper(paper.getId());
+            papers=paperService.getSimPaper(paper.getId(),10);
         }
         if(papers!=null){
             authorMap = authorService.getAuthorForPapers(papers);

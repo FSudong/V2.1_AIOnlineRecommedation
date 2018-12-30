@@ -51,7 +51,7 @@ public class Word2DocByAve extends Word2Doc{
             if(words[i]!=null)
                 word = words[i].trim();
             INDArray wordMatrix = null;
-            if(word != null ){
+            if(word != null && !word.equals("")){
                 wordMatrix = vec.getWordVectorMatrix(word);
             }
             if(wordMatrix!=null){
