@@ -43,6 +43,13 @@ public class PaperService {
         List<Paper> papers = paperdao.selectPaperOrderByTimeSource(offset,limit,10);
         return papers;
     }
+    /**
+     *
+     */
+    public  List<Paper> selectPaperByConference(){
+        List<Paper> papers = paperdao.selectPaperByType(0,100,4);
+        return papers;
+    }
 
     /**
      * 根据论文id查找相关论文
