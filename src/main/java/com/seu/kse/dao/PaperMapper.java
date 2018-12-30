@@ -37,6 +37,7 @@ public interface PaperMapper {
 
 //    人工加
     List<Paper> selectPaperOrderByTime(int pageNum, int limit, int type);
+    List<Paper> selectPaperByType(int offset, int limit,int type);
     List<Paper> selectPaperOrderByTimeSource(int offset, int limit, int type);
 
     List<Paper> selectSomePaper(int start, int end);
